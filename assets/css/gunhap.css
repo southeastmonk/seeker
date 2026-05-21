@@ -442,3 +442,58 @@
   #panel-oheng { border-top: 2px solid #eeeeee; margin-top: 8px; padding-top: 8px; }
   a[href]::after { content: none !important; }
 }
+
+/* ── 오행 비교 차트 (나란히 두 줄) ── */
+.oh-compare-row2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.oh-compare-row2:last-child { border-bottom: none; }
+
+.oh-bars {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.oh-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.oh-who {
+  font-size: 0.62rem;
+  color: #aaaaaa;
+  width: 34px;
+  flex-shrink: 0;
+}
+
+.oh-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.oh-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  min-width: 2px;
+}
+
+.oh-num {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #444444;
+  width: 14px;
+  text-align: right;
+  flex-shrink: 0;
+}

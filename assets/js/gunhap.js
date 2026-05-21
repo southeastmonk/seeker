@@ -707,23 +707,26 @@ function run() {
       <!-- 오행 분포 비교 -->
       <div class="oh-compare-card">
         <div class="rel-title">오행 분포 비교</div>
-        <div class="oh-compare-header">
-          <span></span><span class="oh-label-a">${genderA==='M'?'♂':'♀'} 나</span>
-          <span class="oh-label-b">${genderB==='M'?'♂':'♀'} 상대</span>
-        </div>
         ${(() => {
           const maxOhVal = Math.max(...['木','火','土','金','水'].flatMap(o => [ohA[o], ohB[o]]), 1);
           return ['木','火','土','金','水'].map(o => `
-            <div class="oh-compare-row">
+            <div class="oh-compare-row2">
               <span class="oh-compare-char ${OH_COLOR[o]}">${o}</span>
-              <div class="oh-bar-wrap">
-                <div class="oh-bar-a" style="width:${Math.round(ohA[o]/maxOhVal*100)}%;background:${OH_BAR[o]}"></div>
-              </div>
-              <span class="oh-count-a">${ohA[o]}</span>
-              <span class="oh-divider">:</span>
-              <span class="oh-count-b">${ohB[o]}</span>
-              <div class="oh-bar-wrap oh-bar-wrap-b">
-                <div class="oh-bar-b" style="width:${Math.round(ohB[o]/maxOhVal*100)}%;background:${OH_BAR[o]}"></div>
+              <div class="oh-bars">
+                <div class="oh-bar-row">
+                  <span class="oh-who">${genderA==='M'?'♂':'♀'} 나</span>
+                  <div class="oh-bar-bg">
+                    <div class="oh-bar-fill" style="width:${Math.round(ohA[o]/maxOhVal*100)}%;background:${OH_BAR[o]}"></div>
+                  </div>
+                  <span class="oh-num">${ohA[o]}</span>
+                </div>
+                <div class="oh-bar-row">
+                  <span class="oh-who">${genderB==='M'?'♂':'♀'} 상대</span>
+                  <div class="oh-bar-bg">
+                    <div class="oh-bar-fill" style="width:${Math.round(ohB[o]/maxOhVal*100)}%;background:${OH_BAR[o]}"></div>
+                  </div>
+                  <span class="oh-num">${ohB[o]}</span>
+                </div>
               </div>
             </div>`).join('');
         })()}
