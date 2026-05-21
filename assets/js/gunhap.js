@@ -591,7 +591,7 @@ function run() {
 
   const gzA = p => p ? GAN[p.ganIdx]+JI[p.jiIdx] : '?';
   const gzKorA = p => p ? GAN_KOR[p.ganIdx]+JI_KOR[p.jiIdx] : '';
-  const ohBgMap = { '木':'var(--wood-bg)','火':'var(--fire-bg)','土':'var(--earth-bg)','金':'var(--metal-bg)','水':'var(--water-bg)' };
+  const ohBgMap = { '木':'#f0f7f3','火':'#fff5f4','土':'#fdf8f0','金':'#f5f5f5','水':'#f0f4fa' };
   const relTypeColor = { '합':'c-wood','육합':'c-wood','상생':'c-wood','충':'c-fire','형':'c-fire','파':'c-earth','비화':'c-water','동기':'c-water','상극':'c-fire','중립':'c-metal' };
 
   const html = `

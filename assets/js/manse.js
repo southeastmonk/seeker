@@ -755,7 +755,7 @@ function run() {
     ? `${gzH(yearGZ)}년 &nbsp;${gzH(monthGZ)}월 &nbsp;${gzH(dayGZ)}일`
     : `${gzH(yearGZ)}년 &nbsp;${gzH(monthGZ)}월 &nbsp;${gzH(dayGZ)}일 &nbsp;${gzH(timeGZ)}시`;
 
-  const ohBgMap = { '木':'var(--wood-bg)','火':'var(--fire-bg)','土':'var(--earth-bg)','金':'var(--metal-bg)','水':'var(--water-bg)' };
+  const ohBgMap = { '木':'#f0f7f3','火':'#fff5f4','土':'#fdf8f0','金':'#f5f5f5','水':'#f0f4fa' };
 
   // ── 오행 분석 ──────────────────────────────────
   const monthJiOh = JI_OH2[monthGZ.jiIdx];

@@ -5,6 +5,20 @@
     box-sizing: border-box;
 }
 
+/* ── 오행 색상 변수 (전체 공통) ── */
+:root {
+  --wood:     #2d6a4f;
+  --fire:     #c0392b;
+  --earth:    #8a6020;
+  --metal:    #555555;
+  --water:    #1a3d7a;
+  --wood-bg:  #f0f7f3;
+  --fire-bg:  #fff5f4;
+  --earth-bg: #fdf8f0;
+  --metal-bg: #f5f5f5;
+  --water-bg: #f0f4fa;
+}
+
 body {
     font-family: 'Noto Sans KR', sans-serif;
     background-color: #ffffff; /* 순백색 */
