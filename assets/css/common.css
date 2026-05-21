@@ -1,0 +1,28 @@
+/* 기본 초기화 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #ffffff; /* 순백색 */
+    color: #222222; /* 진회색 */
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden; /* 대문은 스크롤 방지 */
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 모바일 탭 하이라이트 제거 (깔끔한 터치감) */
+button, a {
+    -webkit-tap-highlight-color: transparent;
+}

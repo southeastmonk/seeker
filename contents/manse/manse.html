@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>만세력 — 길을 찾는 발걸음</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/common.css">
+    <link rel="stylesheet" href="../../assets/css/manse.css">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <a href="../../main.html" class="header-logo">길을 찾는 발걸음</a>
+    <span class="header-title">四柱八字</span>
+  </div>
+
+  <!-- 입력 -->
+  <div class="input-area">
+
+    <div class="page-title">
+      <div class="page-title-row">
+        <h1>만세력</h1>
+        <button class="info-btn" onclick="openModal()" aria-label="계산 기준 안내">?</button>
+      </div>
+      <p>생년월일시로 사주팔자를 확인합니다</p>
+    </div>
+
+    <!-- 생년월일: 직접입력 + 달력 선택 -->
+    <div class="date-header">
+      <span class="section-label" style="margin:0">생년월일</span>
+      <div class="cal-wrap">
+        <button class="cal-btn" onclick="triggerDatePicker()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          달력 선택
+        </button>
+        <input type="date" id="datePicker"
+          style="position:absolute;top:100%;right:0;opacity:0;pointer-events:none;width:1px;height:1px;"
+          onchange="applyDatePicker(this)">
+      </div>
+    </div>
+
+    <div class="row3">
+      <div class="field">
+        <label>연도</label>
+        <input type="number" id="iY" placeholder="1990" min="1900" max="2030"
+          onblur="clamp(this,1900,2030)">
+      </div>
+      <div class="field">
+        <label>월</label>
+        <input type="number" id="iM" placeholder="6" min="1" max="12"
+          onblur="clamp(this,1,12)">
+      </div>
+      <div class="field">
+        <label>일</label>
+        <input type="number" id="iD" placeholder="15" min="1" max="31"
+          onblur="clamp(this,1,31)">
+      </div>
+    </div>
+
+    <div class="time-header">
+      <span class="section-label" style="margin:0">태어난 시간</span>
+      <label class="unknown-toggle">
+        <input type="checkbox" id="timeUnknown" onchange="toggleTime(this)">
+        <span>시간 모름</span>
+      </label>
+    </div>
+
+    <div class="row2" id="timeRow">
+      <div class="field">
+        <label>시 (0~23)</label>
+        <input type="number" id="iH" placeholder="14" min="0" max="23"
+          oninput="clamp(this,0,23)">
+      </div>
+      <div class="field">
+        <label>분 (0~59)</label>
+        <input type="number" id="iMin" placeholder="30" min="0" max="59" value="0"
+          oninput="clamp(this,0,59)">
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:20px">성별</div>
+    <div class="gender-row">
+      <button class="gbtn on" id="gM" onclick="setG('M')">♂ 남성</button>
+      <button class="gbtn" id="gF" onclick="setG('F')">♀ 여성</button>
+    </div>
+
+    <button class="btn-calc" onclick="run()">기 운 확 인</button>
+  </div>
+
+  <div id="out"></div>
+
+</div>
+
+<!-- ── 계산 기준 모달 ── -->
+<div class="modal-overlay" id="infoModal" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">📌 계산 기준</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>• <strong>년주</strong>: 입춘 절입시각 기준으로 해가 바뀝니다.</p>
+      <p>• <strong>월주</strong>: 12절기(소한·입춘·경칩·청명·입하·망종·소서·입추·백로·한로·입동·대설) 절입시각 기준.</p>
+      <p>• <strong>일주</strong>: 60갑자 순환 공식 계산 (1900년 1월 1일 甲戌일 기준).</p>
+      <p>• <strong>시주</strong>: 한국 표준시 30분 보정(동경 127.5도) 시두법 적용.</p>
+      <p>• <strong>대운</strong>: 양남·음녀 순행 / 음남·양녀 역행, 3일=1년 환산.</p>
+      <p>• <strong>야자시</strong>: 23:30 이후 출생 시 다음날 일주 기준으로 시주 계산.</p>
+      <p>• <strong>서머타임</strong>: 1948~1961년, 1987~1988년 여름 출생자는 별도 보정이 필요합니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── 십성 상세 설명 모달 ── -->
+<div class="modal-overlay" id="sipsungModal" onclick="closeSipsungModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="sipsungModalTitle"></span>
+      <button class="modal-close" onclick="closeSipsungModal()">✕</button>
+    </div>
+    <div class="modal-body" id="sipsungModalBody"></div>
+  </div>
+</div>
+
+<script src="../../assets/js/manse.js"></script>
+</body>
+</html>

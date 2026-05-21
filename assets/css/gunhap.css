@@ -1,0 +1,444 @@
+/* ════════════════════════════════════════
+   gunhap.css — 사주 궁합 전용 스타일
+   (manse.css 이후에 로드)
+   ════════════════════════════════════════ */
+
+/* ── 두 사람 입력 섹션 ── */
+.person-section {
+  border: 1px solid #eeeeee;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 4px;
+  background: #fafafa;
+}
+
+.person-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.person-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.05rem;
+}
+
+.person-divider {
+  text-align: center;
+  padding: 10px 0;
+  font-size: 1.2rem;
+  color: #dddddd;
+}
+
+/* ── 요약 카드 ── */
+.summary-card {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.sum-pair {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.sum-person {
+  text-align: center;
+}
+
+.sum-label {
+  font-size: 0.7rem;
+  color: #aaaaaa;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.sum-ilju {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+.sum-ilju-kor {
+  font-size: 0.72rem;
+  color: #aaaaaa;
+  margin-top: 4px;
+}
+
+.sum-birth-small {
+  font-size: 0.65rem;
+  color: #cccccc;
+  margin-top: 2px;
+}
+
+.sum-heart {
+  text-align: center;
+  padding: 0 4px;
+}
+
+.sum-score {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+.sum-grade {
+  font-size: 0.78rem;
+  color: #888888;
+  margin-top: 4px;
+}
+
+.sum-grade-desc {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #555555;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.sum-note {
+  font-size: 0.7rem;
+  color: #bbbbbb;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ── 일주 비교 ── */
+.ilju-compare {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eeeeee;
+  gap: 8px;
+}
+
+.ilju-box {
+  text-align: center;
+}
+
+.ilju-sub {
+  font-size: 0.65rem;
+  color: #aaaaaa;
+  margin-bottom: 8px;
+}
+
+.ilju-gan {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ilju-ji {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: 6px;
+}
+
+.ilju-kor {
+  font-size: 0.7rem;
+  color: #aaaaaa;
+  margin-top: 6px;
+}
+
+.ilju-arrow {
+  font-size: 1.2rem;
+  color: #cccccc;
+  text-align: center;
+}
+
+/* ── 관계 카드 ── */
+.rel-card {
+  padding: 16px 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.rel-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #aaaaaa;
+  letter-spacing: 0.08rem;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rel-sub {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #888888;
+  letter-spacing: 0;
+}
+
+.rel-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.rel-item:last-child { border-bottom: none; }
+
+.rel-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: #f5f5f5;
+  flex-shrink: 0;
+}
+
+.rel-badge.c-wood  { background: var(--wood-bg);  color: var(--wood); }
+.rel-badge.c-fire  { background: var(--fire-bg);  color: var(--fire); }
+.rel-badge.c-earth { background: var(--earth-bg); color: var(--earth); }
+.rel-badge.c-metal { background: var(--metal-bg); color: var(--metal); }
+.rel-badge.c-water { background: var(--water-bg); color: var(--water); }
+
+.rel-name {
+  font-size: 0.82rem;
+  color: #444444;
+  flex: 1;
+}
+
+.rel-score {
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.rel-score.pos { color: var(--wood); }
+.rel-score.neg { color: var(--fire); }
+
+.rel-none {
+  font-size: 0.82rem;
+  color: #bbbbbb;
+  text-align: center;
+  padding: 8px 0;
+}
+
+/* 십성 관계 */
+.rel-sipsung-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.rel-ss-item { text-align: center; }
+
+.rel-ss-label {
+  font-size: 0.65rem;
+  color: #aaaaaa;
+  margin-bottom: 6px;
+}
+
+.rel-ss-value {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.rel-ss-divider {
+  font-size: 1.2rem;
+  color: #dddddd;
+}
+
+/* 오행 관계 */
+.rel-oheng-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.rel-oheng-arrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #888888;
+  border: 1px solid #e8e8e8;
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+
+.rel-oheng-desc {
+  font-size: 0.82rem;
+  color: #555555;
+  line-height: 1.6;
+}
+
+/* ── 오행 비교 차트 ── */
+.oh-compare-card {
+  padding: 16px 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.oh-compare-header {
+  display: grid;
+  grid-template-columns: 24px 1fr auto auto 1fr;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 0.68rem;
+  color: #aaaaaa;
+  font-weight: 600;
+}
+
+.oh-label-a { text-align: right; }
+.oh-label-b { text-align: left; }
+
+.oh-compare-row {
+  display: grid;
+  grid-template-columns: 24px 1fr auto auto auto 1fr;
+  gap: 6px;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid #f8f8f8;
+}
+
+.oh-compare-row:last-child { border-bottom: none; }
+
+.oh-compare-char {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.oh-bar-wrap {
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.oh-bar-wrap-b { justify-content: flex-start; }
+
+.oh-bar-a, .oh-bar-b {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+  min-width: 2px;
+}
+
+.oh-count-a {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #444;
+  text-align: right;
+  min-width: 14px;
+}
+
+.oh-count-b {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #444;
+  text-align: left;
+  min-width: 14px;
+}
+
+.oh-divider {
+  font-size: 0.65rem;
+  color: #cccccc;
+  text-align: center;
+}
+
+/* ── 하단 버튼 ── */
+.btn-group {
+  display: flex;
+  gap: 8px;
+  padding: 20px;
+}
+
+.btn-back {
+  flex: 1;
+  padding: 13px;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Sans KR', sans-serif;
+  border: 1.5px solid #1a1a1a;
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.btn-back:active { transform: scale(0.97); }
+
+@media (max-width: 360px) {
+  .sum-ilju  { font-size: 1.5rem; }
+  .ilju-gan, .ilju-ji { font-size: 1.8rem; }
+  .sum-score { font-size: 1.8rem; }
+}
+
+/* ── 버튼 3개 ── */
+.btn-group {
+  display: flex;
+  gap: 6px;
+  padding: 20px;
+}
+
+.btn-back, .btn-print, .btn-share {
+  flex: 1;
+  padding: 12px 6px;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Sans KR', sans-serif;
+  border: 1.5px solid #1a1a1a;
+}
+
+.btn-back  { background: #ffffff; color: #1a1a1a; }
+.btn-print { background: #ffffff; color: #1a1a1a; }
+.btn-share { background: #1a1a1a; color: #ffffff; flex: 1.2; }
+
+@media (hover: hover) {
+  .btn-back:hover, .btn-print:hover { background: #f5f5f5; }
+  .btn-share:hover { background: #333333; border-color: #333333; }
+}
+.btn-back:active, .btn-print:active { transform: scale(0.97); }
+.btn-share:active { transform: scale(0.97); opacity: 0.9; }
+
+/* ── 인쇄 스타일 ── */
+@media print {
+  .header-logo::after { content: none; }
+  .tab-bar    { display: none !important; }
+  .btn-group  { display: none !important; }
+  .input-area { display: none !important; }
+  #panel-ilju,
+  #panel-oheng { display: block !important; }
+  @page { margin: 15mm; }
+  body { background: #ffffff !important; }
+  .wrap { max-width: 100% !important; }
+  .oh-compare-card, .rel-card, .ilju-compare, .summary-card {
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+  #panel-oheng { border-top: 2px solid #eeeeee; margin-top: 8px; padding-top: 8px; }
+  a[href]::after { content: none !important; }
+}

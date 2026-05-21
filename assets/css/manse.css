@@ -1,0 +1,1164 @@
+/* ════════════════════════════════════════
+   manse.css  —  사주 만세력
+   ════════════════════════════════════════ */
+
+:root {
+  --wood:     #2d6a4f;
+  --fire:     #c0392b;
+  --earth:    #8a6020;
+  --metal:    #555555;
+  --water:    #1a3d7a;
+  --wood-bg:  #f0f7f3;
+  --fire-bg:  #fff5f4;
+  --earth-bg: #fdf8f0;
+  --metal-bg: #f5f5f5;
+  --water-bg: #f0f4fa;
+}
+
+body {
+  overflow: auto;
+  align-items: flex-start;
+  background-color: #ffffff;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 60px;
+}
+
+/* ── 헤더 ── */
+.header {
+  padding: 20px;
+  border-bottom: 1px solid #eeeeee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-logo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.02rem;
+  text-decoration: none;
+}
+
+.header-title {
+  font-size: 0.82rem;
+  color: #aaaaaa;
+  font-weight: 300;
+  letter-spacing: 0.05rem;
+}
+
+/* ── 입력 영역 (page-title 포함) ── */
+.input-area {
+  padding: 28px 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+/* 페이지 타이틀 — input-area 안에 자연스럽게 */
+.page-title {
+  margin-bottom: 28px;
+}
+
+.page-title h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.03rem;
+  margin-bottom: 4px;
+}
+
+.page-title p {
+  font-size: 0.82rem;
+  color: #aaaaaa;
+  font-weight: 300;
+}
+
+.section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #aaaaaa;
+  letter-spacing: 0.08rem;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* 날짜 입력 그리드 */
+.row3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  transition: opacity 0.2s;
+}
+
+.row2.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.field label {
+  display: block;
+  font-size: 0.68rem;
+  color: #bbbbbb;
+  margin-bottom: 5px;
+}
+
+.field input {
+  width: 100%;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 11px 12px;
+  font-size: 1rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #1a1a1a;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field input:focus { border-color: #1a1a1a; }
+.field input:disabled { background: #f9f9f9; color: #cccccc; }
+
+/* 시간 헤더 */
+.time-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.unknown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  color: #888888;
+  user-select: none;
+}
+
+.unknown-toggle input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: #1a1a1a;
+  cursor: pointer;
+}
+
+/* 성별 */
+.gender-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.gbtn {
+  padding: 11px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #aaaaaa;
+  font-size: 0.9rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.gbtn.on {
+  border-color: #1a1a1a;
+  color: #1a1a1a;
+  font-weight: 700;
+  background: #f9f9f9;
+}
+
+/* 실행 버튼 */
+.btn-calc {
+  width: 100%;
+  padding: 14px;
+  background: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: 'Noto Sans KR', sans-serif;
+  letter-spacing: 0.05rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+@media (hover: hover) { .btn-calc:hover { background: #333333; } }
+.btn-calc:active { transform: scale(0.97); opacity: 0.9; }
+
+/* ── 결과 ── */
+.result { animation: fadeUp 0.3s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 요약 ── */
+.summary-card {
+  padding: 28px 20px 24px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.sum-birth {
+  font-size: 0.75rem;
+  color: #aaaaaa;
+  font-weight: 300;
+  margin-bottom: 6px;
+}
+
+.sum-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.03rem;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.sum-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.badge {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 400;
+  border: 1px solid #e8e8e8;
+  color: #666666;
+  background: #fafafa;
+}
+
+/* ── 사주 기둥 ── */
+.pillars-card { border-bottom: 1px solid #eeeeee; }
+
+.pillars-labels {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid #eeeeee;
+}
+
+.pillars-labels.three-col,
+.pillars-grid.three-col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.pl-label {
+  text-align: center;
+  padding: 10px 4px;
+  font-size: 0.66rem;
+  color: #aaaaaa;
+  font-weight: 500;
+  border-right: 1px solid #eeeeee;
+}
+.pl-label:last-child { border-right: none; }
+
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.pillar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid #eeeeee;
+}
+.pillar:last-child { border-right: none; }
+
+.p-gan {
+  width: 100%;
+  text-align: center;
+  padding: 20px 4px 14px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.p-gan-char {
+  font-size: 2.1rem;
+  font-weight: 700;
+  line-height: 1;
+  display: block;
+  font-family: 'Noto Serif KR', serif;
+}
+
+.p-gan-sub {
+  font-size: 0.6rem;
+  color: #bbbbbb;
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+.p-ji {
+  width: 100%;
+  text-align: center;
+  padding: 14px 4px 20px;
+}
+
+.p-ji-char {
+  font-size: 2.1rem;
+  font-weight: 700;
+  line-height: 1;
+  display: block;
+  font-family: 'Noto Serif KR', serif;
+}
+
+.p-ji-sub {
+  font-size: 0.6rem;
+  color: #bbbbbb;
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+/* 오행 색 */
+.c-wood  { color: var(--wood); }
+.c-fire  { color: var(--fire); }
+.c-earth { color: var(--earth); }
+.c-metal { color: var(--metal); }
+.c-water { color: var(--water); }
+
+/* ── 세부 표 ── */
+.table-card { border-bottom: 1px solid #eeeeee; }
+
+.trow {
+  display: grid;
+  grid-template-columns: 64px 1fr 1fr 1fr 1fr;
+  border-bottom: 1px solid #f5f5f5;
+}
+.trow.three-col { grid-template-columns: 64px 1fr 1fr 1fr; }
+.trow:last-child { border-bottom: none; }
+
+.tlabel {
+  padding: 10px 12px;
+  font-size: 0.66rem;
+  color: #aaaaaa;
+  font-weight: 500;
+  border-right: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  background: #fafafa;
+}
+
+.tcell {
+  padding: 10px 6px;
+  text-align: center;
+  border-right: 1px solid #f0f0f0;
+  font-size: 0.8rem;
+  color: #444444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tcell:last-child { border-right: none; }
+.tcell.big {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-family: 'Noto Serif KR', serif;
+}
+
+/* ── 오행 분포 ── */
+.oheng-card {
+  padding: 24px 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.oheng-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #aaaaaa;
+  letter-spacing: 0.08rem;
+  margin-bottom: 14px;
+}
+
+.oheng-items { display: flex; gap: 6px; }
+
+.oheng-item {
+  flex: 1;
+  text-align: center;
+  border-radius: 10px;
+  padding: 12px 4px;
+  border: 1px solid #eeeeee;
+}
+
+.oheng-char { font-size: 1.1rem; font-weight: 700; font-family: 'Noto Serif KR', serif; }
+.oheng-cnt  { font-size: 0.66rem; color: #aaaaaa; margin-top: 3px; }
+
+.oheng-bar-bg {
+  margin-top: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  height: 3px;
+  overflow: hidden;
+}
+
+.oheng-bar { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+
+/* ── 대운 세운 ── */
+.daewoon-card {
+  padding: 24px 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.daewoon-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #aaaaaa;
+  letter-spacing: 0.08rem;
+  margin-bottom: 14px;
+}
+
+.daewoon-list, .sewoon-list {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.daewoon-list::-webkit-scrollbar,
+.sewoon-list::-webkit-scrollbar { display: none; }
+
+.dw-item {
+  flex-shrink: 0;
+  text-align: center;
+  border: 1px solid #eeeeee;
+  border-radius: 10px;
+  padding: 12px 10px;
+  min-width: 58px;
+}
+
+.dw-item.current {
+  border-color: #1a1a1a;
+  background: #fafafa;
+}
+
+.dw-age {
+  font-size: 0.58rem;
+  color: #aaaaaa;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+
+.dw-item.current .dw-age { color: #1a1a1a; font-weight: 700; }
+
+/* 빈 칸 (시주 모름) */
+.p-empty { color: #e0e0e0 !important; }
+
+/* 대운 한글 표기 — 한자 바로 아래 */
+.dw-gan, .dw-ji {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+  display: block;
+  margin-top: 6px;
+}
+
+.dw-kor {
+  font-size: 0.58rem;
+  color: #bbbbbb;
+  margin-top: 2px;
+  margin-bottom: 0;
+  letter-spacing: 0.02rem;
+  display: block;
+}
+
+.dw-section-label {
+  font-size: 0.62rem;
+  color: #bbbbbb;
+  font-weight: 500;
+  margin: 18px 0 10px;
+}
+
+.sw-item {
+  flex-shrink: 0;
+  text-align: center;
+  border: 1px solid #eeeeee;
+  border-radius: 8px;
+  padding: 9px 7px;
+  min-width: 44px;
+}
+
+.sw-item.current {
+  border-color: #1a1a1a;
+  background: #fafafa;
+}
+
+.sw-year {
+  font-size: 0.56rem;
+  color: #aaaaaa;
+  margin-bottom: 4px;
+}
+
+.sw-item.current .sw-year { color: #1a1a1a; font-weight: 700; }
+
+.sw-gan, .sw-ji {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  display: block;
+  margin-top: 4px;
+}
+
+.sw-kor {
+  font-size: 0.55rem;
+  color: #bbbbbb;
+  margin-top: 2px;
+  display: block;
+}
+
+/* ── 계산 기준 ── */
+.jeol-card {
+  padding: 20px;
+  font-size: 0.73rem;
+  color: #aaaaaa;
+  line-height: 1.8;
+  border-bottom: 1px solid #eeeeee;
+}
+.jeol-card strong { color: #888888; font-weight: 600; }
+
+/* ── 하단 버튼 ── */
+
+/* ── 반응형 ── */
+@media (max-width: 360px) {
+  .p-gan-char, .p-ji-char { font-size: 1.7rem; }
+  .tcell.big { font-size: 1rem; }
+  .dw-gan, .dw-ji { font-size: 1rem; }
+}
+
+/* ── 페이지 타이틀 행 (만세력 + ? 버튼) ── */
+.page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.info-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid #cccccc;
+  background: #ffffff;
+  color: #aaaaaa;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  font-family: 'Noto Sans KR', sans-serif;
+  line-height: 1;
+  padding: 0;
+}
+
+.info-btn:hover { border-color: #1a1a1a; color: #1a1a1a; }
+
+/* ── 달력 선택 버튼 ── */
+.date-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* input을 버튼 바로 아래에 앵커링하기 위한 wrapper */
+.cal-wrap {
+  position: relative;
+}
+
+.cal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid #e8e8e8;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #888888;
+  font-size: 0.75rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.cal-btn:hover  { border-color: #1a1a1a; color: #1a1a1a; }
+.cal-btn:active { transform: scale(0.96); }
+
+/* ── 대운/세운 타이틀 + 화살표 ── */
+.daewoon-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #aaaaaa;
+  letter-spacing: 0.08rem;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dw-sub {
+  font-weight: 400;
+  color: #cccccc;
+  font-size: 0.62rem;
+  letter-spacing: 0;
+  flex: 1;
+}
+
+.scroll-arrows {
+  display: flex;
+  gap: 3px;
+  margin-left: auto;
+}
+
+.scroll-arrows button {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #e8e8e8;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #888888;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+
+.scroll-arrows button:hover  { border-color: #1a1a1a; color: #1a1a1a; }
+.scroll-arrows button:active { transform: scale(0.93); }
+
+/* ── 모달 ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-box {
+  background: #ffffff;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px 20px 0 0;
+  padding: 0 0 32px;
+  transform: translateY(20px);
+  transition: transform 0.25s;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-overlay.open .modal-box {
+  transform: translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #eeeeee;
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+}
+
+.modal-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.modal-close {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: #f5f5f5;
+  border-radius: 50%;
+  color: #888888;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.modal-close:hover { background: #eeeeee; color: #1a1a1a; }
+
+.modal-body {
+  padding: 20px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-body p {
+  font-size: 0.82rem;
+  color: #555555;
+  line-height: 1.7;
+}
+
+.modal-body strong {
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+/* ── 탭 바 ── */
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid #eeeeee;
+  background: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 13px 4px;
+  border: none;
+  background: transparent;
+  color: #aaaaaa;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  letter-spacing: 0.02rem;
+}
+
+.tab-btn.active {
+  color: #1a1a1a;
+  border-bottom-color: #1a1a1a;
+  font-weight: 700;
+}
+
+.tab-btn:active { opacity: 0.7; }
+
+/* 탭 패널 */
+.hidden { display: none !important; }
+
+/* ── 십성 ── */
+.tcell.sipsung {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02rem;
+}
+
+/* ── 지장간 ── */
+.tcell.jjg {
+  flex-direction: row;
+  gap: 4px;
+  padding: 8px 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.jjg-char {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  position: relative;
+}
+
+.jjg-char {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444444;
+}
+
+.jjg-k {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.55rem;
+  color: #bbbbbb;
+  font-weight: 400;
+  display: block;
+}
+
+/* 월령 표시 */
+.ml-mark {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.5rem;
+  color: var(--earth);
+  font-weight: 700;
+  display: block;
+  line-height: 1;
+}
+
+/* ── 공망 카드 ── */
+.gongmang-card {
+  padding: 18px 20px;
+  border-bottom: 1px solid #eeeeee;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.gm-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #aaaaaa;
+  letter-spacing: 0.08rem;
+  white-space: nowrap;
+}
+
+.gm-sub {
+  font-weight: 400;
+  font-size: 0.6rem;
+  color: #cccccc;
+  margin-left: 4px;
+}
+
+.gm-value {
+  display: flex;
+  gap: 8px;
+}
+
+.gm-item {
+  text-align: center;
+  border: 1px solid #eeeeee;
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gm-ji {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.gm-kor {
+  font-size: 0.6rem;
+  color: #bbbbbb;
+  margin-top: 3px;
+}
+
+.gm-desc {
+  font-size: 0.72rem;
+  color: #aaaaaa;
+  flex: 1;
+  min-width: 100%;
+  margin-top: 2px;
+}
+
+/* ── 오행 강약 분석 ── */
+.analysis-card, .yongsin-card, .keyword-card {
+  padding: 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.analysis-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #aaaaaa;
+  letter-spacing: 0.08rem;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hint-badge {
+  font-size: 0.6rem;
+  font-weight: 400;
+  color: #cccccc;
+  letter-spacing: 0;
+  border: 1px solid #eeeeee;
+  border-radius: 10px;
+  padding: 2px 7px;
+}
+
+.analysis-line {
+  font-size: 0.82rem;
+  color: #555555;
+  line-height: 1.8;
+}
+
+/* ── 용신·기신 ── */
+.ys-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ys-group { flex: 1; }
+
+.ys-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 0.03rem;
+}
+
+.ys-good { color: #2d6a4f; }
+.ys-bad  { color: #c0392b; }
+
+.ys-items {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ys-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+  padding: 10px 14px;
+  border: 1px solid #eeeeee;
+  min-width: 52px;
+}
+
+.ys-char {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ys-kor {
+  font-size: 0.62rem;
+  color: #aaaaaa;
+  margin-top: 4px;
+}
+
+.ys-note {
+  font-size: 0.7rem;
+  color: #bbbbbb;
+  line-height: 1.6;
+  border-top: 1px solid #f5f5f5;
+  padding-top: 10px;
+  margin-top: 4px;
+}
+
+/* ── 오행 키워드 ── */
+.kw-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0 12px 12px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.kw-row:last-child { border-bottom: none; }
+
+.kw-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 32px;
+}
+
+.kw-char {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.kw-tag {
+  font-size: 0.55rem;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.kw-yong { background: #eef8f0; color: #2d6a4f; }
+.kw-gi   { background: #fff5f4; color: #c0392b; }
+
+.kw-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.kw-line {
+  font-size: 0.78rem;
+  color: #555555;
+  line-height: 1.6;
+}
+
+.kw-label {
+  font-size: 0.65rem;
+  color: #aaaaaa;
+  font-weight: 600;
+  margin-right: 6px;
+  letter-spacing: 0.03rem;
+}
+
+/* ── 버튼 3개 레이아웃 ── */
+.btn-group {
+  display: flex;
+  gap: 6px;
+  padding: 20px;
+}
+
+.btn-back, .btn-print, .btn-share {
+  padding: 12px 6px;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: 'Noto Sans KR', sans-serif;
+  border: 1.5px solid #1a1a1a;
+  flex: 1;
+}
+
+.btn-back  { background: #ffffff; color: #1a1a1a; }
+.btn-print { background: #ffffff; color: #1a1a1a; }
+.btn-share { background: #1a1a1a; color: #ffffff; flex: 1.2; }
+
+@media (hover: hover) {
+  .btn-back:hover, .btn-print:hover { background: #f5f5f5; }
+  .btn-share:hover { background: #333333; border-color: #333333; }
+}
+.btn-back:active, .btn-print:active { transform: scale(0.97); }
+.btn-share:active { transform: scale(0.97); opacity: 0.9; }
+
+/* ══════════════════════════════════════
+   @media print — 인쇄/PDF 전용 스타일
+   ══════════════════════════════════════ */
+@media print {
+  /* 불필요한 요소 숨기기 */
+  .header-logo::after { content: none; }
+  .tab-bar    { display: none !important; }
+  .btn-group  { display: none !important; }
+  .gongmang-card .gm-desc { display: none; }
+  .scroll-arrows { display: none !important; }
+  .cal-wrap   { display: none !important; }
+  .daewoon-list, .sewoon-list { overflow: visible !important; flex-wrap: wrap !important; }
+
+  /* 모든 탭 패널 펼치기 */
+  #panel-saju,
+  #panel-oheng,
+  #panel-daewoon { display: block !important; }
+
+  /* 페이지 여백 */
+  @page { margin: 15mm; }
+
+  body {
+    background: #ffffff !important;
+    font-size: 11pt;
+  }
+
+  .wrap { max-width: 100% !important; padding-bottom: 0 !important; }
+
+  /* 헤더 심플하게 */
+  .header {
+    border-bottom: 1px solid #cccccc;
+    padding: 10px 0;
+  }
+
+  /* 카드 그림자 제거 */
+  .pillars-card, .table-card, .oheng-card,
+  .daewoon-card, .analysis-card, .yongsin-card,
+  .keyword-card, .gongmang-card {
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  /* 탭별 구분선 */
+  #panel-oheng, #panel-daewoon {
+    border-top: 2px solid #eeeeee;
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  /* 인쇄 시 URL 표시 안 함 */
+  a[href]::after { content: none !important; }
+}
+
+/* ── 십성 클릭 가능 셀 ── */
+.ss-clickable {
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 6px;
+  text-decoration: underline;
+  text-decoration-color: rgba(0,0,0,0.15);
+  text-underline-offset: 3px;
+}
+
+.ss-clickable:hover { filter: brightness(0.88); }
+.ss-clickable:active { transform: scale(0.94); }
+
+/* ── 십성 모달 내용 ── */
+.ss-section {
+  padding: 10px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.ss-section:last-of-type { border-bottom: none; }
+
+.ss-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #aaaaaa;
+  letter-spacing: 0.05rem;
+  margin-bottom: 4px;
+}
+
+.ss-text {
+  font-size: 0.85rem;
+  color: #444444;
+  line-height: 1.7;
+}
+
+.ss-good { background: #f8fff9; border-radius: 8px; padding: 10px 12px; margin: 0 -4px; }
+.ss-good .ss-label { color: #2d6a4f; }
+
+.ss-warn { background: #fff9f8; border-radius: 8px; padding: 10px 12px; margin: 0 -4px; }
+.ss-warn .ss-label { color: #c0392b; }

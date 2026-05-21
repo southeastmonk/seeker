@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>사주 궁합 — 길을 찾는 발걸음</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/common.css">
+  <link rel="stylesheet" href="../../assets/css/manse.css">
+  <link rel="stylesheet" href="../../assets/css/gunhap.css">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <a href="../../main.html" class="header-logo">길을 찾는 발걸음</a>
+    <span class="header-title">四柱宮合</span>
+  </div>
+
+  <!-- 나 입력 -->
+  <div class="input-area">
+    <div class="page-title">
+      <div class="page-title-row">
+        <h1>사주 궁합</h1>
+      </div>
+      <p>두 사람의 생년월일시로 궁합을 분석합니다</p>
+    </div>
+
+    <!-- A: 나 -->
+    <div class="person-section person-a">
+      <div class="person-label-row">
+        <span class="person-label">나</span>
+        <div class="cal-wrap">
+          <button class="cal-btn" onclick="triggerDatePickerA()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            달력
+          </button>
+          <input type="date" id="datePickerA"
+            style="position:absolute;top:100%;right:0;opacity:0;pointer-events:none;width:1px;height:1px"
+            onchange="applyDatePickerA(this)">
+        </div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>연도</label><input type="number" id="iYA" placeholder="1990" min="1900" max="2030" onblur="clamp(this,1900,2030)"></div>
+        <div class="field"><label>월</label><input type="number" id="iMA" placeholder="6" min="1" max="12" onblur="clamp(this,1,12)"></div>
+        <div class="field"><label>일</label><input type="number" id="iDA" placeholder="15" min="1" max="31" onblur="clamp(this,1,31)"></div>
+      </div>
+      <div class="time-header">
+        <span class="section-label" style="margin:0">태어난 시간</span>
+        <label class="unknown-toggle">
+          <input type="checkbox" id="timeUnknownA" onchange="toggleTimeA(this)">
+          <span>시간 모름</span>
+        </label>
+      </div>
+      <div class="row2" id="timeRowA">
+        <div class="field"><label>시 (0~23)</label><input type="number" id="iHA" placeholder="14" min="0" max="23" onblur="clamp(this,0,23)"></div>
+        <div class="field"><label>분 (0~59)</label><input type="number" id="iMinA" placeholder="30" min="0" max="59" value="0" onblur="clamp(this,0,59)"></div>
+      </div>
+      <div class="section-label" style="margin-top:16px">성별</div>
+      <div class="gender-row">
+        <button class="gbtn" id="gMA" onclick="setGA('M')">♂ 남성</button>
+        <button class="gbtn" id="gFA" onclick="setGA('F')">♀ 여성</button>
+      </div>
+    </div>
+
+    <div class="person-divider">
+      <span>❤</span>
+    </div>
+
+    <!-- B: 상대방 -->
+    <div class="person-section person-b">
+      <div class="person-label-row">
+        <span class="person-label">상대방</span>
+        <div class="cal-wrap">
+          <button class="cal-btn" onclick="triggerDatePickerB()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            달력
+          </button>
+          <input type="date" id="datePickerB"
+            style="position:absolute;top:100%;right:0;opacity:0;pointer-events:none;width:1px;height:1px"
+            onchange="applyDatePickerB(this)">
+        </div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>연도</label><input type="number" id="iYB" placeholder="1992" min="1900" max="2030" onblur="clamp(this,1900,2030)"></div>
+        <div class="field"><label>월</label><input type="number" id="iMB" placeholder="3" min="1" max="12" onblur="clamp(this,1,12)"></div>
+        <div class="field"><label>일</label><input type="number" id="iDB" placeholder="20" min="1" max="31" onblur="clamp(this,1,31)"></div>
+      </div>
+      <div class="time-header">
+        <span class="section-label" style="margin:0">태어난 시간</span>
+        <label class="unknown-toggle">
+          <input type="checkbox" id="timeUnknownB" onchange="toggleTimeB(this)">
+          <span>시간 모름</span>
+        </label>
+      </div>
+      <div class="row2" id="timeRowB">
+        <div class="field"><label>시 (0~23)</label><input type="number" id="iHB" placeholder="9" min="0" max="23" onblur="clamp(this,0,23)"></div>
+        <div class="field"><label>분 (0~59)</label><input type="number" id="iMinB" placeholder="0" min="0" max="59" value="0" onblur="clamp(this,0,59)"></div>
+      </div>
+      <div class="section-label" style="margin-top:16px">성별</div>
+      <div class="gender-row">
+        <button class="gbtn" id="gMB" onclick="setGB('M')">♂ 남성</button>
+        <button class="gbtn" id="gFB" onclick="setGB('F')">♀ 여성</button>
+      </div>
+    </div>
+
+    <button class="btn-calc" style="margin-top:20px" onclick="run()">궁 합 보 기</button>
+  </div>
+
+  <div id="out"></div>
+
+</div>
+<script src="../../assets/js/gunhap.js"></script>
+</body>
+</html>

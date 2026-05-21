@@ -1,0 +1,52 @@
+.container {
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.icon-box {
+    font-size: 2rem;
+    color: #1a1a1a;
+    margin-bottom: 1.5rem;
+    opacity: 0.8;
+}
+
+.title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.05rem;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #666666;
+    font-weight: 300;
+    margin-bottom: 3rem;
+}
+
+.btn-start {
+    display: inline-block;
+    padding: 15px 40px;
+    border: 1.5px solid #1a1a1a;
+    border-radius: 30px; /* 부드러운 곡률 */
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out; /* 현대적인 짧은 전환 */
+}
+
+/* PC용 Hover */
+@media (hover: hover) {
+    .btn-start:hover {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+}
+
+/* 모바일용 Active (터치 시 반응) */
+.btn-start:active {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    transform: scale(0.96); /* 살짝 눌리는 느낌 */
+}
