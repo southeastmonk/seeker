@@ -609,10 +609,177 @@ function scrollList(id, dir) {
 // 탭 전환
 function switchTab(tab) {
   activeTab = tab;
-  ['saju','oheng','daewoon'].forEach(t => {
+  ['saju','sinsal','oheng','daewoon'].forEach(t => {
     document.getElementById('tab-' + t)?.classList.toggle('active', t === tab);
     document.getElementById('panel-' + t)?.classList.toggle('hidden', t !== tab);
   });
+}
+
+// ═══════════════════════════════════════════════════════════
+// 신살 데이터 & 계산
+// ═══════════════════════════════════════════════════════════
+
+// 도화살: 년지/일지가 子午卯酉이면 해당
+// 정확히는 년지 기준 → 寅午戌년: 卯, 申子辰년: 酉, 巳酉丑년: 午, 亥卯未년: 子
+const DOHWA_MAP = {
+  2:2, 6:2, 10:2,   // 寅午戌 → 卯(3)
+  8:8, 0:8, 4:8,    // 申子辰 → 酉(9)
+  5:6, 9:6, 1:6,    // 巳酉丑 → 午(6)
+  11:0, 3:0, 7:0,   // 亥卯未 → 子(0)
+};
+
+// 역마살: 년지/일지 기준
+// 寅午戌 → 申, 申子辰 → 寅, 巳酉丑 → 亥, 亥卯未 → 巳
+const YUKMA_MAP = {
+  2:8, 6:8, 10:8,   // 寅午戌 → 申
+  8:2, 0:2, 4:2,    // 申子辰 → 寅
+  5:11, 9:11, 1:11, // 巳酉丑 → 亥
+  11:5, 3:5, 7:5,   // 亥卯未 → 巳
+};
+
+// 화개살: 년지/일지 기준
+// 寅午戌 → 戌, 申子辰 → 辰, 巳酉丑 → 丑, 亥卯未 → 未
+const HWAGAE_MAP = {
+  2:10, 6:10, 10:10,
+  8:4,  0:4,  4:4,
+  5:1,  9:1,  1:1,
+  11:7, 3:7,  7:7,
+};
+
+// 천을귀인: 일간 기준으로 해당 지지
+// 甲戊庚→丑未, 乙己→子申, 丙丁→亥酉, 壬癸→卯巳, 辛→午寅
+const CHUNEUL_MAP = {
+  0: [1,7],   // 甲 → 丑未
+  4: [1,7],   // 戊 → 丑未
+  6: [1,7],   // 庚 → 丑未
+  1: [0,8],   // 乙 → 子申
+  5: [0,8],   // 己 → 子申
+  2: [11,9],  // 丙 → 亥酉
+  3: [11,9],  // 丁 → 亥酉
+  8: [3,5],   // 壬 → 卯巳
+  9: [3,5],   // 癸 → 卯巳
+  7: [6,2],   // 辛 → 午寅
+};
+
+// 백호살: 일주 기준 (甲辰, 乙未, 丙戌, 丁丑, 戊辰, 壬戌, 癸丑)
+const BAEKHO_LIST = [
+  [0,4],[1,7],[2,10],[3,1],[4,4],[8,10],[9,1]
+];
+
+// 귀문관살: 년지/일지 기준
+// 子→酉, 丑→午, 寅→未, 卯→申, 辰→亥, 巳→戌, 午→丑, 未→寅, 申→卯, 酉→子, 戌→巳, 亥→辰
+const GWIMUN_MAP = [9,6,7,8,11,10,1,2,3,0,5,4];
+
+// 원진살: 년지/일지 쌍
+// 子未, 丑午, 寅酉, 卯申, 辰亥, 巳戌
+const WONJIN_PAIRS = [[0,7],[1,6],[2,9],[3,8],[4,11],[5,10]];
+
+// 천덕귀인: 월지 기준
+// 1월→丁, 2월→申, 3월→壬, 4월→辛, 5월→亥, 6월→甲
+// 7월→癸, 8월→寅, 9월→丙, 10월→乙, 11월→巳, 12월→庚
+const CHUNDEOK_GAN = [3,null,8,7,null,0,9,null,2,1,null,6]; // null=지지
+const CHUNDEOK_JI  = [null,8,null,null,11,null,null,2,null,null,5,null];
+
+function calcSinsal(pillars, yearGZ, monthGZ, dayGZ, timeGZ) {
+  const result = [];
+  const yJi = yearGZ.jiIdx;
+  const dGan = dayGZ.ganIdx;
+  const dJi  = dayGZ.jiIdx;
+
+  // 모든 지지 목록
+  const allJi = pillars.filter(Boolean).map(p => p.jiIdx);
+  const allGan = pillars.filter(Boolean).map(p => p.ganIdx);
+
+  // 1. 도화살
+  const dohwaJi = DOHWA_MAP[yJi];
+  if (dohwaJi !== undefined && allJi.includes(dohwaJi)) {
+    const pos = pillars.map((p,i) => p && p.jiIdx === dohwaJi ? ['시주','일주','월주','년주'][i] : null).filter(Boolean);
+    result.push({ name:'도화살', hanja:'桃花殺', emoji:'🌸',
+      desc:'매력과 인기가 넘치는 기운입니다. 이성에게 호감을 주고 예술적 감각이 뛰어납니다.',
+      pos: pos.join('·') + '에 해당',
+      good:'뛰어난 매력, 예술적 감각, 대인관계 원만',
+      caution:'이성 문제, 바람기, 주색에 주의하세요.' });
+  }
+
+  // 2. 역마살
+  const yukmaJi = YUKMA_MAP[yJi];
+  if (yukmaJi !== undefined && allJi.includes(yukmaJi)) {
+    const pos = pillars.map((p,i) => p && p.jiIdx === yukmaJi ? ['시주','일주','월주','년주'][i] : null).filter(Boolean);
+    result.push({ name:'역마살', hanja:'驛馬殺', emoji:'🐎',
+      desc:'이동과 변화의 기운이 강합니다. 해외, 여행, 직업 변동이 많을 수 있습니다.',
+      pos: pos.join('·') + '에 해당',
+      good:'활동력, 해외운, 변화 적응력, 개척 정신',
+      caution:'한 곳에 정착하기 어렵고 분주함이 많을 수 있어요.' });
+  }
+
+  // 3. 화개살
+  const hwagaeJi = HWAGAE_MAP[yJi];
+  if (hwagaeJi !== undefined && allJi.includes(hwagaeJi)) {
+    const pos = pillars.map((p,i) => p && p.jiIdx === hwagaeJi ? ['시주','일주','월주','년주'][i] : null).filter(Boolean);
+    result.push({ name:'화개살', hanja:'華蓋殺', emoji:'🎨',
+      desc:'예술, 종교, 학문의 기운이 강합니다. 혼자만의 시간을 즐기고 정신세계가 깊습니다.',
+      pos: pos.join('·') + '에 해당',
+      good:'예술적 재능, 학문, 종교적 심성, 창의성',
+      caution:'고독함을 느낄 수 있고 현실적인 면이 부족할 수 있어요.' });
+  }
+
+  // 4. 천을귀인
+  const chuneulJiList = CHUNEUL_MAP[dGan] || [];
+  const matchedChuneul = allJi.filter(j => chuneulJiList.includes(j));
+  if (matchedChuneul.length > 0) {
+    const pos = pillars.map((p,i) => p && chuneulJiList.includes(p.jiIdx) ? ['시주','일주','월주','년주'][i] : null).filter(Boolean);
+    result.push({ name:'천을귀인', hanja:'天乙貴人', emoji:'⭐',
+      desc:'하늘이 내린 귀인의 기운입니다. 위기에서 도움을 받고 귀인을 만나는 복이 있습니다.',
+      pos: pos.join('·') + '에 해당',
+      good:'귀인의 도움, 위기 탈출, 사회적 성공, 복덕',
+      caution:'귀인에 너무 의존하지 않고 스스로 노력하는 자세가 필요해요.' });
+  }
+
+  // 5. 백호살
+  const isBaekho = BAEKHO_LIST.some(([g,j]) => g === dGan && j === dJi);
+  if (isBaekho) {
+    result.push({ name:'백호살', hanja:'白虎殺', emoji:'🐅',
+      desc:'강인하고 결단력 있는 기운입니다. 투지와 실행력이 강하지만 사고수를 조심해야 합니다.',
+      pos: '일주에 해당',
+      good:'강인한 의지, 실행력, 리더십, 승부사 기질',
+      caution:'사고, 수술, 충동적 행동에 주의하세요.' });
+  }
+
+  // 6. 귀문관살
+  const gwimunJi = GWIMUN_MAP[yJi];
+  if (allJi.includes(gwimunJi)) {
+    const pos = pillars.map((p,i) => p && p.jiIdx === gwimunJi ? ['시주','일주','월주','년주'][i] : null).filter(Boolean);
+    result.push({ name:'귀문관살', hanja:'鬼門關殺', emoji:'👁',
+      desc:'예민한 감수성과 직관력이 뛰어납니다. 신경이 날카롭고 영적인 감각이 있습니다.',
+      pos: pos.join('·') + '에 해당',
+      good:'뛰어난 직관력, 예술적 감각, 영적 감수성',
+      caution:'신경쇠약, 과민반응, 강박적 사고에 주의하세요.' });
+  }
+
+  // 7. 원진살
+  const wonjinMatch = WONJIN_PAIRS.find(([a,b]) => allJi.includes(a) && allJi.includes(b));
+  if (wonjinMatch) {
+    result.push({ name:'원진살', hanja:'怨嗔殺', emoji:'🔗',
+      desc:'서로 맞지 않는 기운이 충돌합니다. 인간관계에서 갈등이나 이별을 경험할 수 있습니다.',
+      pos: `${JI[wonjinMatch[0]]}·${JI[wonjinMatch[1]]} 원진`,
+      good:'강한 인연, 깊은 감정, 독립심',
+      caution:'갈등, 이별, 악연에 주의하세요. 관계에서 감정 조절이 필요해요.' });
+  }
+
+  // 8. 천덕귀인
+  const mJi = monthGZ.jiIdx;
+  const mMonth = [1,2,3,4,5,6,7,8,9,10,11,12].findIndex((_,i) =>
+    CHUNDEOK_GAN[i] !== null ? allGan.includes(CHUNDEOK_GAN[i]) :
+    CHUNDEOK_JI[i] !== null ? allJi.includes(CHUNDEOK_JI[i]) : false);
+  if (mMonth >= 0) {
+    result.push({ name:'천덕귀인', hanja:'天德貴人', emoji:'💫',
+      desc:'하늘의 덕이 함께하는 기운입니다. 재앙을 막고 복을 불러오는 길성입니다.',
+      pos: `${mMonth+1}월 기준 해당`,
+      good:'하늘의 보호, 재앙 소멸, 복덕, 귀인 인연',
+      caution:'이 기운을 잘 살리려면 선한 마음과 덕을 쌓는 것이 중요해요.' });
+  }
+
+  return result;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -867,8 +1034,45 @@ function run() {
     <!-- 탭 -->
     <div class="tab-bar">
       <button class="tab-btn active" id="tab-saju"    onclick="switchTab('saju')">사주</button>
+      <button class="tab-btn"        id="tab-sinsal"  onclick="switchTab('sinsal')">신살</button>
       <button class="tab-btn"        id="tab-oheng"   onclick="switchTab('oheng')">오행</button>
       <button class="tab-btn"        id="tab-daewoon" onclick="switchTab('daewoon')">대운·세운</button>
+    </div>
+
+    <!-- 탭: 신살 (hidden) -->
+    <div id="panel-sinsal" class="hidden">
+      ${(() => {
+        const sinsalList = calcSinsal(pillars, yearGZ, monthGZ, dayGZ, timeGZ);
+        if (sinsalList.length === 0) {
+          return `<div class="sinsal-empty">
+            <p>주요 신살에 해당하지 않습니다.</p>
+            <p style="font-size:0.75rem;color:#bbbbbb;margin-top:6px">신살이 없는 것은 오히려 평온하고 안정된 삶의 기운입니다 😊</p>
+          </div>`;
+        }
+        return sinsalList.map(s => `
+          <div class="sinsal-card">
+            <div class="sinsal-header">
+              <span class="sinsal-emoji">${s.emoji}</span>
+              <div>
+                <span class="sinsal-name">${s.name}</span>
+                <span class="sinsal-hanja">${s.hanja}</span>
+              </div>
+              <span class="sinsal-pos">${s.pos}</span>
+            </div>
+            <p class="sinsal-desc">${s.desc}</p>
+            <div class="sinsal-detail">
+              <div class="sinsal-good">
+                <span class="sinsal-label">✅ 긍정</span>
+                <span>${s.good}</span>
+              </div>
+              <div class="sinsal-warn">
+                <span class="sinsal-label">⚠ 주의</span>
+                <span>${s.caution}</span>
+              </div>
+            </div>
+          </div>`).join('');
+      })()}
+      <div class="sinsal-note">※ 신살 해석은 참고용이며 전문 역술인의 감명과 다를 수 있습니다.</div>
     </div>
 
     <!-- 탭1: 사주 -->
@@ -1140,7 +1344,7 @@ function share(url) {
 // 인쇄/PDF
 function printResult() {
   // 모든 탭 패널 임시 표시
-  const panels = ['panel-saju', 'panel-oheng', 'panel-daewoon'];
+  const panels = ['panel-saju', 'panel-sinsal', 'panel-oheng', 'panel-daewoon'];
   panels.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.remove('hidden');

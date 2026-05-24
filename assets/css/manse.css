@@ -1149,3 +1149,104 @@ body {
 
 .ss-warn { background: #fff9f8; border-radius: 8px; padding: 10px 12px; margin: 0 -4px; }
 .ss-warn .ss-label { color: #c0392b; }
+
+/* ── 신살 ── */
+.sinsal-card {
+  padding: 16px 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.sinsal-card:last-of-type { border-bottom: none; }
+
+.sinsal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.sinsal-emoji {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.sinsal-name {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-right: 6px;
+}
+
+.sinsal-hanja {
+  font-size: 0.72rem;
+  color: #aaaaaa;
+}
+
+.sinsal-pos {
+  margin-left: auto;
+  font-size: 0.68rem;
+  color: #888888;
+  background: #f5f5f5;
+  border-radius: 20px;
+  padding: 3px 10px;
+  flex-shrink: 0;
+}
+
+.sinsal-desc {
+  font-size: 0.85rem;
+  color: #444444;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+.sinsal-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sinsal-good, .sinsal-warn {
+  display: flex;
+  gap: 8px;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.sinsal-good {
+  background: #f8fff9;
+  color: #2d6a4f;
+}
+
+.sinsal-warn {
+  background: #fff9f8;
+  color: #c0392b;
+}
+
+.sinsal-label {
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sinsal-empty {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 0.88rem;
+  color: #888888;
+  line-height: 1.8;
+}
+
+.sinsal-note {
+  padding: 16px 20px;
+  font-size: 0.72rem;
+  color: #bbbbbb;
+  text-align: center;
+  border-top: 1px solid #eeeeee;
+}
+
+/* 인쇄 시 신살 패널도 표시 */
+@media print {
+  #panel-sinsal { display: block !important; border-top: 2px solid #eeeeee; margin-top: 8px; }
+}
