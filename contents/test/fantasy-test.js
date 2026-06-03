@@ -1,0 +1,966 @@
+'use strict';
+
+// ═══════════════════════════════════════════════════════
+// 1. 질문 데이터 (20문항 + 스탯 코드)
+// ═══════════════════════════════════════════════════════
+const QUESTIONS = [
+  {
+    stage: 1,
+    emoji: '🏛️',
+    situation: '눈을 떠보니 차가운 대리석 바닥. 낯선 신전의 신관이 다가온다...',
+    question: '신관이 묻는다. "구원자여, 당신의 영혼이 품은 가장 강력한 무기는 무엇입니까?"',
+    choices: [
+      { text: '"내 몸을 지킬 단단한 갑옷과 적의 뼈를 부술 묵직한 강철 검입니다."', stats: {STR:2, VIT:1} },
+      { text: '"남들의 눈을 피해 어둠 속에 숨을 수 있는 날카로운 단검과 민첩함입니다."', stats: {AGI:2, STR:1} },
+      { text: '"내 손끝에서 피어나는 신비로운 마법의 불꽃과 지혜입니다."', stats: {INT:2, AGI:1} },
+      { text: '"상처를 치유하는 따뜻한 빛과 보이지 않는 신의 가호입니다."', stats: {VIT:2, INT:1} },
+    ]
+  },
+  {
+    stage: 1,
+    emoji: '🐉',
+    situation: '모험가 길드에 등록하러 가니 거대 몬스터가 마을을 습격하기 시작했다!',
+    question: '경보가 울린다! 당신의 첫 행동은?',
+    choices: [
+      { text: '"위험해, 다들 내 뒤로!" 주민들을 대피시키고 맨 앞에서 막아선다.', stats: {VIT:2, STR:1} },
+      { text: '"지금이 기회다!" 혼란을 틈타 몬스터 지휘관의 목을 치러 돌진한다.', stats: {STR:2, AGI:1} },
+      { text: '"지형지물부터 확인하자." 높은 곳으로 이동해 화력 지원 태세를 갖춘다.', stats: {INT:2, AGI:1} },
+      { text: '"부상자가 생길 거야!" 치료소에 남아 다친 사람들을 치료할 준비를 한다.', stats: {VIT:2, INT:1} },
+    ]
+  },
+  {
+    stage: 1,
+    emoji: '🗺️',
+    situation: '어두운 지하 미궁 탐험 중 갈림길이 나타났다.',
+    question: '동료들이 당신의 선택을 기다리고 있다. 어느 길로 향하겠는가?',
+    choices: [
+      { text: '함정 없고 안전하게 표시된 평탄한 통로', stats: {VIT:2, INT:1} },
+      { text: '거대한 몬스터들의 포효가 들리는 화끈한 투기장의 길', stats: {STR:2, LUK:1} },
+      { text: '음산한 기운이지만 고대 마법 유물이 잠들어 있을 금기된 서고', stats: {INT:2, VIT:1} },
+      { text: '숲의 기운이 느껴지고 신비한 동물들이 살 것 같은 비밀의 정원', stats: {LUK:2, AGI:1} },
+    ]
+  },
+  {
+    stage: 1,
+    emoji: '🐲',
+    situation: '미궁 깊은 곳에서 전설의 드래곤과 마주쳤다! 화염 브레스를 준비 중이다!',
+    question: '일촉즉발의 순간! 당신의 선택은?',
+    choices: [
+      { text: '거대한 방어막을 전개해 파티원 전원을 완벽하게 보호한다.', stats: {VIT:2, STR:1} },
+      { text: '브레스 직전 사각지대로 파고들어 가장 치명적인 약점에 칼을 꽂는다.', stats: {AGI:2, STR:1} },
+      { text: '드래곤의 시공간을 왜곡하는 룬 결계로 브레스를 강제로 끊어버린다.', stats: {INT:2, VIT:1} },
+      { text: '브레스 궤적을 순식간에 계산해 파티원들에게 대피 좌표를 외친다.', stats: {INT:1, VIT:1, AGI:1} },
+    ]
+  },
+  {
+    stage: 1,
+    emoji: '💜',
+    situation: '치열한 전투 끝에 드래곤을 쓰러뜨렸다! 드래곤의 심장에서 어둠의 기운이 흘러나온다.',
+    question: '이 강력한 어둠의 힘을 어떻게 다루겠는가?',
+    choices: [
+      { text: '"위험한 힘이야." 신성한 힘으로 완벽하게 정화해 소멸시킨다.', stats: {VIT:2, INT:1} },
+      { text: '"힘에는 선악이 없다." 이 어둠의 힘을 내 것으로 흡수해 군대를 키운다.', stats: {STR:2, INT:1} },
+      { text: '무기에 부여해 마법과 물리가 결합된 새로운 연계기를 연구한다.', stats: {INT:2, STR:1} },
+      { text: '심장을 정밀 해체해 전설급 포션이나 마력 폭탄 재료로 보관한다.', stats: {INT:2, LUK:1} },
+    ]
+  },
+  {
+    stage: 2,
+    emoji: '💎',
+    situation: '사냥을 마치고 돌아오는 길, 한 파티원의 실수로 보물 절반이 강물에 빠졌다!',
+    question: '이때 당신의 반응은?',
+    choices: [
+      { text: '"다치지 않은 게 어디야! 돈은 또 벌면 되지." 어깨를 두드리며 위로한다.', stats: {VIT:1, LUK:1} },
+      { text: '"방금 왜 그런 실수를 했지?" 냉정하게 복기하며 피드백을 준다.', stats: {INT:2} },
+      { text: '"이미 벌어진 일인데~ 오늘 밤 술 파티나 하자!" 분위기를 전환한다.', stats: {LUK:2, AGI:1} },
+      { text: '(말없이) 소환수를 부리거나 낚싯대를 던져 어떻게든 건져내려 시도한다.', stats: {INT:1, STR:1} },
+    ]
+  },
+  {
+    stage: 2,
+    emoji: '🎵',
+    situation: '마을 광장에서 음유시인이 당신의 활약상을 노래하고 있다.',
+    question: '당신이 가장 듣고 싶은 찬사는?',
+    choices: [
+      { text: '"그가 없었다면 우리 중 누구도 살아 돌아오지 못했습니다! 진정한 구원자!"', stats: {VIT:2} },
+      { text: '"단 한 번의 손짓으로 전장을 뒤흔들고 적들을 쓸어버린 파괴신!"', stats: {STR:2} },
+      { text: '"어디서 나타났는지 아무도 보지 못한 전설의 그림자!"', stats: {AGI:2} },
+      { text: '"보이지 않는 곳에서 전장의 판도를 완벽하게 뒤흔든 위대한 지략가!"', stats: {INT:2} },
+    ]
+  },
+  {
+    stage: 2,
+    emoji: '💰',
+    situation: '드디어 첫 월급(대량의 골드)을 받았다!',
+    question: '가장 먼저 돈을 쓰고 싶은 곳은?',
+    choices: [
+      { text: '내 몸을 완벽하게 보호해 줄 최고급 방어구를 맞춘다.', stats: {VIT:2, STR:1} },
+      { text: '화려한 코스튬을 사거나 마을에서 가장 비싼 음식을 즐긴다.', stats: {LUK:2, AGI:1} },
+      { text: '희귀한 마법 스크롤, 연금술 시약, 고대 문헌 등을 싹쓸이한다.', stats: {INT:2} },
+      { text: '다음 사냥을 위한 물약, 덫, 화살 등을 종류별로 완벽하게 구비한다.', stats: {INT:1, VIT:1, STR:1} },
+    ]
+  },
+  {
+    stage: 2,
+    emoji: '👥',
+    situation: '다음 레이드를 위해 동료를 추가로 영입하려고 한다.',
+    question: '당신이 파티에 꼭 넣고 싶은 사람은?',
+    choices: [
+      { text: '화려한 기술은 없지만 절대 배신하지 않을 신뢰도 100%의 동료', stats: {VIT:2, STR:1} },
+      { text: '성격은 까칠하지만 치명타 하나는 기가 막히게 꽂는 천재적인 딜러', stats: {STR:2, AGI:1} },
+      { text: '아군에게 치명적인 버프를 걸어 전투를 아주 편하게 만드는 서포터', stats: {INT:2, VIT:1} },
+      { text: '검도 쓰고 마법도 쓸 줄 아는 어떤 상황이든 대처 가능한 올라운더', stats: {AGI:2, INT:1} },
+    ]
+  },
+  {
+    stage: 2,
+    emoji: '🔨',
+    situation: '거대한 전쟁을 앞두고 무기 장인이 특별한 주문 제작을 제안했다.',
+    question: '당신이 원하는 무기의 형태는?',
+    choices: [
+      { text: '적의 갑옷을 통째로 으스러뜨릴 수 있는 거대하고 묵직한 강철 무기', stats: {STR:2, VIT:1} },
+      { text: '스치기만 해도 치명상, 독을 바를 수 있는 암살용 단검', stats: {AGI:2, STR:1} },
+      { text: '대자연의 원소 마력이나 시공간을 왜곡하는 신비로운 지팡이', stats: {INT:2, LUK:1} },
+      { text: '마법 탄환을 발사하는 정밀한 기계 공학 무기', stats: {INT:1, AGI:1, LUK:1} },
+    ]
+  },
+  {
+    stage: 3,
+    emoji: '👑',
+    situation: '치열한 전쟁이 끝나고 왕이 거대한 영지와 백작 작위를 내리겠다고 한다.',
+    question: '이후 당신의 삶은?',
+    choices: [
+      { text: '영지를 경영하고 기사단을 육성하며 영지민을 다스리는 군주로 산다.', stats: {STR:1, VIT:1, INT:1} },
+      { text: '"왕궁은 답답해." 작위만 걸어두고 새로운 대륙 탐험을 위해 짐을 싼다.', stats: {AGI:2, LUK:1} },
+      { text: '마법탑에 틀어박혀 세상과 단절한 채 고독하게 학문을 연구한다.', stats: {INT:2, VIT:1} },
+      { text: '길드 하우스를 차려 후배들을 양성하는 해결사로 산다.', stats: {VIT:2, INT:1} },
+    ]
+  },
+  {
+    stage: 3,
+    emoji: '📖',
+    situation: '당신의 영웅담을 담은 판타지 소설이 출간된다면...',
+    question: '어떤 제목이 가장 마음에 드나요?',
+    choices: [
+      { text: '[철벽의 수호자, 대륙의 방패가 되다]', stats: {VIT:2, STR:1} },
+      { text: '[나 혼자 만렙 마법사: 심연의 지배자]', stats: {INT:2, STR:1} },
+      { text: '[그림자 속의 암살자, 황제의 목을 베다]', stats: {AGI:2, STR:1} },
+      { text: '[이세계 올라운더, 신들의 무기를 다루다]', stats: {AGI:1, INT:1, STR:1} },
+    ]
+  },
+  {
+    stage: 3,
+    emoji: '🌙',
+    situation: '한밤중, 갑자기 알 수 없는 신의 계시가 내려온다.',
+    question: '"구원자여, 네가 가장 두려워하는 것은 무엇이냐?" 솔직하게 답하라.',
+    choices: [
+      { text: '"동료를 지키지 못하는 것입니다."', stats: {VIT:2} },
+      { text: '"내가 가진 힘의 한계입니다."', stats: {STR:2} },
+      { text: '"적보다 내 계획이 틀리는 것입니다."', stats: {INT:2} },
+      { text: '"솔직히 별로 두렵지 않습니다. 그냥 잘게요."', stats: {LUK:1}, hidden: 'lazy' },
+    ]
+  },
+  {
+    stage: 3,
+    emoji: '⚗️',
+    situation: '강력한 마법사가 당신에게 금지된 비전 마법서를 건네며 말한다.',
+    question: '"이 책을 읽으면 엄청난 힘을 얻지만 기억 일부를 잃는다." 당신의 선택은?',
+    choices: [
+      { text: '"힘보다 기억이 소중하다." 거절하고 현명하게 돌아선다.', stats: {INT:2, VIT:1} },
+      { text: '"힘을 얻겠다." 주저 없이 마법서를 받아든다.', stats: {STR:2, INT:1} },
+      { text: '"잠깐, 내용을 먼저 살펴봐야지." 책을 분석하며 리스크를 계산한다.', stats: {INT:2, AGI:1} },
+      { text: '"얼마나 주면 팔 수 있어요?" 흥정을 시도한다.', stats: {LUK:2} },
+    ]
+  },
+  {
+    stage: 3,
+    emoji: '🏆',
+    situation: '대륙 최강 토너먼트에 초대장이 날아왔다!',
+    question: '당신의 전략 스타일은?',
+    choices: [
+      { text: '상대의 공격을 모두 받아내며 지치게 만드는 철벽 수비', stats: {VIT:2, STR:1} },
+      { text: '첫 라운드부터 압도적인 공격력으로 상대를 제압', stats: {STR:2, AGI:1} },
+      { text: '상대의 패턴을 분석해 빈틈이 생길 때 일격을 가함', stats: {INT:2, AGI:1} },
+      { text: '"참가비가 얼마죠?" 상금을 확인하고 출전 여부를 결정', stats: {LUK:2}, hidden: 'lazy' },
+    ]
+  },
+  {
+    stage: 4,
+    emoji: '🌋',
+    situation: '화산이 폭발하기 시작했다. 마을 사람들이 공황 상태다.',
+    question: '당신의 행동은?',
+    choices: [
+      { text: '맨 앞에서 용암 흐름을 막는 방어 마법을 시전한다.', stats: {VIT:2, INT:1} },
+      { text: '가장 빠른 경로를 계산해 주민 대피를 진두지휘한다.', stats: {INT:2, AGI:1} },
+      { text: '화산 중심부로 돌진해 분화 원인을 직접 제거하려 한다.', stats: {STR:2, AGI:1} },
+      { text: '높은 곳에서 상황을 지켜보며 도망갈 타이밍을 재고 있다.', stats: {AGI:2}, hidden: 'lazy' },
+    ]
+  },
+  {
+    stage: 4,
+    emoji: '🤝',
+    situation: '라이벌 파티가 도움을 요청해왔다. 과거에 당신에게 상처를 준 파티다.',
+    question: '어떻게 하겠는가?',
+    choices: [
+      { text: '과거는 과거. 흔쾌히 돕고 새로운 관계를 시작한다.', stats: {VIT:2, LUK:1} },
+      { text: '"조건이 있어." 협력 조건을 협상한 뒤 돕는다.', stats: {INT:2, STR:1} },
+      { text: '"직접 해결해봐." 냉정하게 거절하고 내 길을 간다.', stats: {STR:2, AGI:1} },
+      { text: '"도와드리죠. 대신 나중에 빚 하나 깔고 갑니다."', stats: {LUK:2, INT:1} },
+    ]
+  },
+  {
+    stage: 4,
+    emoji: '🌟',
+    situation: '신이 나타나 소원 하나를 들어주겠다고 한다.',
+    question: '당신이 선택하는 소원은?',
+    choices: [
+      { text: '"이 세계의 모든 전쟁을 끝내주십시오."', stats: {VIT:2, INT:1} },
+      { text: '"역대 최강의 전투력을 주십시오."', stats: {STR:2, AGI:1} },
+      { text: '"모든 지식과 지혜를 주십시오."', stats: {INT:2, LUK:1} },
+      { text: '"평생 복권 당첨 운을 주십시오."', stats: {LUK:2}, hidden: 'lazy' },
+    ]
+  },
+  {
+    stage: 4,
+    emoji: '🏙️',
+    situation: '모험을 마치고 은퇴를 앞두고 있다. 마지막 여정을 정해야 한다.',
+    question: '당신의 마지막 모험은?',
+    choices: [
+      { text: '후배 모험가들과 함께 대륙 최후의 던전을 개척한다.', stats: {VIT:1, STR:1, INT:1} },
+      { text: '혼자서 아무도 가지 않은 미지의 대륙으로 떠난다.', stats: {AGI:2, LUK:1} },
+      { text: '평화로운 마을에 정착해 다음 세대를 위한 책을 쓴다.', stats: {INT:2, VIT:1} },
+      { text: '잠깐... 은퇴하면 노후 자금은요?', stats: {LUK:2}, hidden: 'lazy' },
+    ]
+  },
+  {
+    stage: 4,
+    emoji: '💫',
+    situation: '마지막 질문이다. 전설의 거울이 당신의 진짜 모습을 비춰준다.',
+    question: '거울 속에서 당신의 모습은?',
+    choices: [
+      { text: '동료들을 지키며 앞장서는 믿음직한 수호자', stats: {VIT:2, STR:1} },
+      { text: '어둠 속에서 홀로 빛나는 고독한 강자', stats: {STR:2, INT:1} },
+      { text: '모든 것을 꿰뚫어 보는 냉철한 지략가', stats: {INT:2, AGI:1} },
+      { text: '흐릿하게 아무것도 보이지 않는다... 거울이 고장난 건가?', stats: {LUK:1}, hidden: 'lazy' },
+    ]
+  },
+];
+
+// ═══════════════════════════════════════════════════════
+// 2. 직업 데이터
+// ═══════════════════════════════════════════════════════
+const JOBS = {
+  // 히든 직업 (최우선)
+  SLIME: {
+    name: '슬라임', en: 'Slime', emoji: '💦', grade: 'UR',
+    stats: {STR:1, INT:1, AGI:1, VIT:5, LUK:1},
+    desc: '너무 무해하게 태어나 젤리가 되셨습니다. 공격 의지가 전혀 없어 신이 당신을 슬라임으로 환생시켰습니다. 하지만 걱정 마세요... 슬라임도 진화하면 마왕이 됩니다.',
+    skills: [
+      {icon:'💧', name:'말랑말랑 방어', desc:'모든 공격을 흘려버리는 고무 재질 육체. 데미지 90% 감소.'},
+      {icon:'🔄', name:'무한 분열', desc:'죽여도 죽여도 다시 생겨남. 생존률 999%.'},
+      {icon:'😴', name:'젤리 숙면', desc:'어디서든 잠들 수 있는 특수 능력.'},
+    ],
+    good: '대마도사', bad: '어쌔신',
+    condition: 'slime'
+  },
+  ROOKIE: {
+    name: '만년 초보자', en: 'Eternal Rookie', emoji: '🎒', grade: 'UR',
+    stats: {STR:1, INT:1, AGI:3, VIT:5, LUK:5},
+    desc: '1번 마을에서 10년째 닭만 쫓아다니는 고인물 지박령. 전투보다 도망이 특기이며 가방 속에는 쓸모없는 잡템만 가득합니다. 하지만 어떤 이유에서인지 살아남는 건 항상 당신입니다.',
+    skills: [
+      {icon:'🐔', name:'닭 추격 만렙', desc:'10년간 닭만 쫓아 AGI가 비정상적으로 높아짐.'},
+      {icon:'🎒', name:'잡템의 달인', desc:'쓸모없어 보이는 아이템이 위기 상황에서 기적을 만들어냄.'},
+      {icon:'🍀', name:'초보자의 행운', desc:'왜인지 항상 살아남음. LUK 스탯 만렙.'},
+    ],
+    good: '연금술사', bad: '광전사',
+    condition: 'rookie'
+  },
+  CHICKEN: {
+    name: '마왕성의 치킨', en: 'Chicken of Demon Castle', emoji: '🐔', grade: 'UR',
+    stats: {STR:1, INT:2, AGI:5, VIT:1, LUK:3},
+    desc: '정의로운 척 하다가 결정적인 순간 항상 도망치는 바람에 마왕성에서 치킨으로 일하고 있습니다. 빠르기는 세계 최강이지만 싸울 의지가 없습니다. 아군 탓하는 스킬만 만렙입니다.',
+    skills: [
+      {icon:'💨', name:'광속 도주', desc:'위험을 감지하는 순간 이미 3km 도망쳐 있음.'},
+      {icon:'🫵', name:'남 탓 전문가', desc:'모든 실패를 아군 탓으로 돌리는 특수 기술.'},
+      {icon:'🍗', name:'치킨 배달', desc:'마왕성에서 치킨 배달부로 취직. 나름 안정적인 직업.'},
+    ],
+    good: '바드', bad: '성기사',
+    condition: 'chicken'
+  },
+  FARMER: {
+    name: '전설의 농부', en: 'Legendary Farmer', emoji: '🧑‍🌾', grade: 'UR',
+    stats: {STR:4, INT:2, AGI:1, VIT:5, LUK:3},
+    desc: '싸우기 싫어서 감자만 심다가 만렙을 찍었습니다. 농기구를 다루는 실력이 마왕의 대검을 능가하며 수확한 감자의 수가 전설급입니다. 평화를 사랑하는 진정한 강자.',
+    skills: [
+      {icon:'🥔', name:'감자 만렙 수확', desc:'밭 하나에서 나오는 감자량이 던전 보물 수준.'},
+      {icon:'⚒️', name:'전설의 호미', desc:'마왕의 대검을 두 동강 낼 수 있는 농기구 다루기.'},
+      {icon:'🌱', name:'대지의 수호자', desc:'농사를 지키기 위해서라면 어떤 적도 물리칠 수 있음.'},
+    ],
+    good: '대사제', bad: '네크로맨서',
+    condition: 'farmer'
+  },
+  // 일반 직업들
+  PALADIN: {
+    name: '성기사', en: 'Paladin', emoji: '🛡️', grade: 'SSR',
+    stats: {STR:3, INT:3, AGI:2, VIT:5, LUK:2},
+    desc: '정의와 신념으로 무장한 성스러운 전사입니다. 아군을 보호하는 철벽 방어와 신성한 오라로 적을 압도합니다. 누군가를 위해 싸울 때 가장 강해지는 유형입니다.',
+    skills: [
+      {icon:'✨', name:'신성한 오라', desc:'주변 파티원에게 방어력 +30% 버프를 지속적으로 부여.'},
+      {icon:'🛡️', name:'철벽 수호', desc:'치명적인 공격을 파티원 대신 받아내는 희생 방어.'},
+      {icon:'💊', name:'성스러운 치유', desc:'전투 중 스스로와 아군의 체력을 회복시키는 신성 마법.'},
+    ],
+    good: '대마도사', bad: '네크로맨서',
+    condition: null
+  },
+  MARTIAL: {
+    name: '권법가', en: 'Martial Artist', emoji: '👊', grade: 'SR',
+    stats: {STR:5, INT:2, AGI:4, VIT:3, LUK:2},
+    desc: '정의감에 불타 주먹부터 나가는 열혈 파이터입니다. 육체를 극한까지 단련해 맨손으로도 전설의 몬스터를 상대합니다. 몸이 먼저 움직이는 유형.',
+    skills: [
+      {icon:'🔥', name:'열혈 돌진', desc:'분노가 폭발하면 STR이 2배로 증가하는 각성 상태 발동.'},
+      {icon:'💥', name:'기(氣) 폭발', desc:'내기를 응축해 방출하는 광역 충격파 공격.'},
+      {icon:'💪', name:'무적의 육체', desc:'어지간한 타격은 그냥 맞고 버티는 철벽 체력.'},
+    ],
+    good: '대사제', bad: '마탄사',
+    condition: null
+  },
+  MAGIC_SWORD: {
+    name: '마검사', en: 'Magic Swordsman', emoji: '⚔️', grade: 'SSR',
+    stats: {STR:4, INT:4, AGI:3, VIT:3, LUK:2},
+    desc: '마법과 검술을 완벽하게 융합한 최강의 하이브리드 전사입니다. 적의 약점을 철저히 계산해 최소한의 움직임으로 최대의 피해를 줍니다.',
+    skills: [
+      {icon:'⚡', name:'인챈트 블레이드', desc:'검에 마력을 부여해 원소 속성 피해 추가.'},
+      {icon:'🎯', name:'약점 분석', desc:'전투 시작 3초 내 적의 약점 파악 및 공략 루트 계산.'},
+      {icon:'🌀', name:'마법검 연계', desc:'검격과 마법을 동시에 시전하는 연계 콤보 공격.'},
+    ],
+    good: '대사제', bad: '어쌔신',
+    condition: null
+  },
+  BERSERKER: {
+    name: '광전사', en: 'Berserker', emoji: '🪓', grade: 'SR',
+    stats: {STR:5, INT:1, AGI:4, VIT:3, LUK:5},
+    desc: '눈앞의 적을 분쇄하는 전장의 시한폭탄입니다. 분노가 차오를수록 강해지며 아드레날린을 먹고 사는 전투 중독자. 적도 아군도 두려워합니다.',
+    skills: [
+      {icon:'😤', name:'광기 각성', desc:'체력이 낮아질수록 공격력이 폭발적으로 증가.'},
+      {icon:'🔴', name:'피의 분노', desc:'자신이 받은 피해만큼 다음 공격력에 반영.'},
+      {icon:'💀', name:'공포의 전장', desc:'등장만으로도 적들에게 공포 디버프 부여.'},
+    ],
+    good: '대사제', bad: '시공간 마법사',
+    condition: null
+  },
+  HIGH_PRIEST: {
+    name: '대사제', en: 'High Priest', emoji: '🕊️', grade: 'SSR',
+    stats: {STR:1, INT:4, AGI:2, VIT:4, LUK:3},
+    desc: '철저한 진형 관리와 완벽한 타이밍의 힐러입니다. 파티원이 죽는 것을 용납하지 않는 완벽주의자. 뒤에서 파티 전체를 살리는 진정한 MVP.',
+    skills: [
+      {icon:'💚', name:'완전 부활', desc:'사망한 파티원을 즉시 부활시키는 신성 마법.'},
+      {icon:'🌟', name:'신의 가호', desc:'파티원 전원에게 일정 시간 무적 상태 부여.'},
+      {icon:'📿', name:'정화의 빛', desc:'모든 상태이상과 저주를 제거하는 신성 파동.'},
+    ],
+    good: '광전사', bad: '저주술사',
+    condition: null
+  },
+  BARD: {
+    name: '바드', en: 'Bard', emoji: '🎵', grade: 'SR',
+    stats: {STR:2, INT:3, AGI:3, VIT:2, LUK:5},
+    desc: '전장의 분위기를 타고 흥을 돋우는 음유시인입니다. 노래와 음악으로 아군을 강화하고 적을 교란합니다. 파티 분위기 메이커이자 의외로 강한 서포터.',
+    skills: [
+      {icon:'🎸', name:'전의 고양', desc:'전투 BGM을 연주해 파티원 전체 사기 및 공격력 증가.'},
+      {icon:'😴', name:'수면 멜로디', desc:'적들을 잠에 빠뜨리는 마법 노래.'},
+      {icon:'🎤', name:'즉흥 연주', desc:'상황에 맞는 마법 음악을 즉석에서 작곡 시전.'},
+    ],
+    good: '광전사', bad: '저주술사',
+    condition: null
+  },
+  HEXER: {
+    name: '저주술사', en: 'Hexer', emoji: '🔮', grade: 'SR',
+    stats: {STR:1, INT:5, AGI:2, VIT:3, LUK:3},
+    desc: '적의 능력치를 깎아내려 고사시키는 냉정한 책략가입니다. 직접 싸우지 않아도 상대방을 무력화시키는 마법의 달인. 가장 무서운 적입니다.',
+    skills: [
+      {icon:'💀', name:'죽음의 저주', desc:'대상에게 지속 피해와 능력치 감소를 동시에 부여.'},
+      {icon:'🕸️', name:'속박의 주박', desc:'적의 행동을 봉인하는 마법 사슬 생성.'},
+      {icon:'👁️', name:'흑마안', desc:'적의 약점과 저항을 꿰뚫어 보는 마안.'},
+    ],
+    good: '바드', bad: '대사제',
+    condition: null
+  },
+  SHAMAN: {
+    name: '무당', en: 'Shaman', emoji: '🎲', grade: 'SR',
+    stats: {STR:2, INT:3, AGI:3, VIT:2, LUK:5},
+    desc: '신내림과 부적, 운에 기대어 싸우는 변칙파입니다. 예측 불가능한 행동으로 적과 아군 모두를 당황시키지만 결과는 항상 좋은 편입니다.',
+    skills: [
+      {icon:'🔔', name:'신내림 강림', desc:'전투 중 무작위 신의 능력을 빌려 사용.'},
+      {icon:'🧧', name:'행운의 부적', desc:'전투 시작 시 LUK에 따라 랜덤한 강력한 버프 부여.'},
+      {icon:'🌀', name:'혼돈의 춤', desc:'예측 불가능한 움직임으로 적의 공격 회피율 대폭 증가.'},
+    ],
+    good: '연금술사', bad: '신궁',
+    condition: null
+  },
+  SNIPER: {
+    name: '신궁', en: 'Sniper', emoji: '🎯', grade: 'SSR',
+    stats: {STR:3, INT:4, AGI:5, VIT:2, LUK:3},
+    desc: '오차 없이 적을 꿰뚫는 전설의 저격수입니다. 수백 미터 밖에서도 정확히 급소를 맞추는 집중력과 계산력의 소유자.',
+    skills: [
+      {icon:'🏹', name:'천리안 저격', desc:'시야가 닿는 모든 곳을 사정거리로 만드는 궁술.'},
+      {icon:'💨', name:'무풍 집중', desc:'모든 외부 요인을 차단하고 완벽한 집중 상태 돌입.'},
+      {icon:'🎯', name:'급소 저격', desc:'항상 치명타가 발동하는 필살기.'},
+    ],
+    good: '대사제', bad: '무당',
+    condition: null
+  },
+  RANGER: {
+    name: '속사수', en: 'Ranger', emoji: '🏹', grade: 'SR',
+    stats: {STR:3, INT:2, AGI:5, VIT:2, LUK:4},
+    desc: '동료들을 위해 화살 비를 퍼붓는 감초 레인저입니다. 빠른 손놀림과 뛰어난 동체시력으로 여러 적을 동시에 상대합니다.',
+    skills: [
+      {icon:'💫', name:'연사 폭격', desc:'0.1초 간격으로 10발의 화살을 연속 발사.'},
+      {icon:'🌿', name:'자연의 눈', desc:'은신한 적이나 함정을 본능적으로 감지.'},
+      {icon:'🤸', name:'화살비 회피', desc:'이동하면서도 정확한 사격이 가능한 곡예 전투술.'},
+    ],
+    good: '성기사', bad: '무당',
+    condition: null
+  },
+  GUNNER: {
+    name: '마탄사', en: 'Magic Gunner', emoji: '🔫', grade: 'SSR',
+    stats: {STR:2, INT:4, AGI:4, VIT:2, LUK:4},
+    desc: '마력 탄환의 궤적을 계산하는 차세대 딜러입니다. 마법과 사격술을 결합한 독자적인 전투 스타일로 원거리에서 적을 지배합니다.',
+    skills: [
+      {icon:'⚡', name:'마력 탄환', desc:'마력을 응축한 관통 탄환으로 다중 적 관통 공격.'},
+      {icon:'🔭', name:'탄도 계산', desc:'바람, 중력, 적의 이동 속도를 즉각 계산해 명중률 극대화.'},
+      {icon:'🎰', name:'룰렛 샷', desc:'탄환의 원소 속성을 무작위로 전환하는 변칙 사격.'},
+    ],
+    good: '대사제', bad: '권법가',
+    condition: null
+  },
+  TRAPPER: {
+    name: '트랩퍼', en: 'Trapper', emoji: '💣', grade: 'SR',
+    stats: {STR:2, INT:3, AGI:4, VIT:2, LUK:5},
+    desc: '내 생존을 위해 전장을 난장판으로 만드는 생존 전문가입니다. 곳곳에 설치된 함정과 폭탄으로 전장을 장악합니다.',
+    skills: [
+      {icon:'💣', name:'폭탄 설치', desc:'다양한 종류의 폭탄을 전략적으로 설치.'},
+      {icon:'🪤', name:'함정 달인', desc:'밟는 즉시 발동하는 초정밀 함정 제작.'},
+      {icon:'💨', name:'연막 탈출', desc:'위기 시 연막탄을 터뜨리고 유유히 도망.'},
+    ],
+    good: '신궁', bad: '광전사',
+    condition: null
+  },
+  SHADOW: {
+    name: '그림자 기사', en: 'Shadow Knight', emoji: '👥', grade: 'SR',
+    stats: {STR:3, INT:3, AGI:4, VIT:4, LUK:2},
+    desc: '어둠 속에서 아군의 길을 여는 어둠의 수호자입니다. 그림자 마법과 검술을 결합해 적을 기습하고 아군을 보호합니다.',
+    skills: [
+      {icon:'🌑', name:'그림자 이동', desc:'그림자를 타고 순간이동하는 은밀 기동.'},
+      {icon:'🗡️', name:'어둠의 검', desc:'그림자를 칼날로 만들어 다중 공격.'},
+      {icon:'🛡️', name:'어둠 방어막', desc:'어둠의 힘으로 아군을 보호하는 방어 결계.'},
+    ],
+    good: '대마도사', bad: '대사제',
+    condition: null
+  },
+  DANCER: {
+    name: '무도공', en: 'Dancer', emoji: '👟', grade: 'SR',
+    stats: {STR:2, INT:2, AGI:5, VIT:2, LUK:5},
+    desc: '적의 어그로를 끄는 화려한 스텝의 달인입니다. 전장을 무대로 삼아 현란한 움직임으로 적을 교란하고 아군을 지원합니다.',
+    skills: [
+      {icon:'💃', name:'도발의 춤', desc:'모든 적의 공격 대상을 자신에게 집중시키는 어그로 기술.'},
+      {icon:'✨', name:'현란한 스텝', desc:'춤 동작 자체가 회피기가 되어 공격을 유연하게 피함.'},
+      {icon:'🎭', name:'환영의 무도', desc:'여러 개의 잔상을 만들어 적을 혼란에 빠뜨림.'},
+    ],
+    good: '바드', bad: '신궁',
+    condition: null
+  },
+  ASSASSIN: {
+    name: '어쌔신', en: 'Assassin', emoji: '🗡️', grade: 'SSR',
+    stats: {STR:4, INT:3, AGI:5, VIT:2, LUK:3},
+    desc: '킬 각이 보일 때까지 숨죽여 기다리는 완벽한 암살자입니다. 단 한 번의 일격으로 목표를 제거하는 냉혹한 전문가.',
+    skills: [
+      {icon:'🌙', name:'완전 은신', desc:'마력과 기척을 완전히 지워 탐지 불가능 상태 진입.'},
+      {icon:'☠️', name:'심장 관통', desc:'방어를 무시하고 급소를 직격하는 필살 일격.'},
+      {icon:'💧', name:'독 전문가', desc:'다양한 독을 조제해 무기에 적용하는 독학 전문 기술.'},
+    ],
+    good: '그림자 기사', bad: '마검사',
+    condition: null
+  },
+  THIEF: {
+    name: '도적', en: 'Thief', emoji: '💰', grade: 'SR',
+    stats: {STR:2, INT:2, AGI:5, VIT:2, LUK:5},
+    desc: '보물만 털고 연막탄 치며 유유히 도망치는 자유로운 영혼입니다. 의리보다 이익을 중시하지만 나름의 규칙이 있습니다.',
+    skills: [
+      {icon:'🎪', name:'신기의 손', desc:'전투 중에도 적의 아이템을 훔치는 초고속 손놀림.'},
+      {icon:'💨', name:'연막 탈출', desc:'언제 어디서나 연막탄으로 도주하는 생존 기술.'},
+      {icon:'🔓', name:'만능 자물쇠', desc:'어떤 잠금장치도 3초 안에 해제하는 절도 기술.'},
+    ],
+    good: '무당', bad: '성기사',
+    condition: null
+  },
+  CHRONO: {
+    name: '시공간 마법사', en: 'Chronomancer', emoji: '⏳', grade: 'SSR',
+    stats: {STR:1, INT:5, AGI:3, VIT:4, LUK:3},
+    desc: '시간을 되돌려 아군을 구하는 최고위 마법사입니다. 시공간을 자유자재로 다루는 능력으로 전장을 통제합니다.',
+    skills: [
+      {icon:'⏪', name:'시간 역행', desc:'전투를 3초 전으로 되돌려 치명적인 공격을 없었던 일로 만듦.'},
+      {icon:'⏸️', name:'시간 정지', desc:'특정 대상의 시간을 멈추는 봉인 마법.'},
+      {icon:'⚡', name:'가속의 장', desc:'아군의 시간을 가속시켜 행동 속도 2배 증가.'},
+    ],
+    good: '성기사', bad: '광전사',
+    condition: null
+  },
+  ARCHMAGE: {
+    name: '대마도사', en: 'Archmage', emoji: '🔥', grade: 'SSR',
+    stats: {STR:2, INT:5, AGI:2, VIT:2, LUK:4},
+    desc: '화려한 원소 폭발로 전장을 지워버리는 최강의 공격 마법사입니다. 적이 많을수록 빛나는 광역 딜러.',
+    skills: [
+      {icon:'🌋', name:'원소 대폭발', desc:'화염/냉기/번개를 동시에 발동하는 대광역 절기.'},
+      {icon:'💫', name:'마력 과부하', desc:'평소의 3배에 달하는 마력을 일시적으로 방출.'},
+      {icon:'🌪️', name:'원소 폭풍', desc:'전장 전체를 원소 폭풍으로 초토화하는 필살기.'},
+    ],
+    good: '대사제', bad: '그림자 기사',
+    condition: null
+  },
+  NECRO: {
+    name: '네크로맨서', en: 'Necromancer', emoji: '💀', grade: 'SR',
+    stats: {STR:2, INT:5, AGI:2, VIT:3, LUK:2},
+    desc: '시체들을 부려 귀찮은 일을 대신 시키는 어둠의 마법사입니다. 혼자서 군대를 만들어내는 전장의 전략가.',
+    skills: [
+      {icon:'💀', name:'시체 소환', desc:'쓰러진 적을 즉시 언데드 병사로 되살려 아군으로 만듦.'},
+      {icon:'🦴', name:'뼈 갑옷', desc:'주변의 뼈를 모아 즉석 방어구를 제작.'},
+      {icon:'🌑', name:'죽음의 오라', desc:'주변 적에게 지속적으로 어둠의 피해를 주는 사기 스킬.'},
+    ],
+    good: '흑마법사', bad: '대사제',
+    condition: null
+  },
+  WARLOCK: {
+    name: '흑마법사', en: 'Warlock', emoji: '🩸', grade: 'SSR',
+    stats: {STR:2, INT:5, AGI:2, VIT:2, LUK:5},
+    desc: '적의 생명력을 빨아먹는 파괴자입니다. 금지된 마법과 어둠의 계약으로 강력한 힘을 얻었지만 그 대가를 치릅니다.',
+    skills: [
+      {icon:'🩸', name:'생명력 흡수', desc:'적에게 입힌 피해의 50%를 자신의 체력으로 회복.'},
+      {icon:'🔴', name:'피의 계약', desc:'자신의 체력을 희생해 폭발적인 마력을 얻는 금기 마법.'},
+      {icon:'💥', name:'어둠의 폭발', desc:'모든 마력을 한 점에 집중시켜 폭발시키는 절기.'},
+    ],
+    good: '네크로맨서', bad: '전설의 농부',
+    condition: null
+  },
+  ALCHEMIST: {
+    name: '연금술사', en: 'Alchemist', emoji: '🧪', grade: 'SR',
+    stats: {STR:1, INT:5, AGI:2, VIT:3, LUK:4},
+    desc: '최고의 버프 포션을 보급하는 전장의 마이스터입니다. 무엇이든 분해하고 재조합해 새로운 것을 만들어내는 창조자.',
+    skills: [
+      {icon:'⚗️', name:'만능 포션', desc:'상황에 맞는 최적의 포션을 즉석에서 조제.'},
+      {icon:'💥', name:'폭발물 제조', desc:'주변 재료로 강력한 폭발물을 즉석 제작.'},
+      {icon:'🔄', name:'연금 변환', desc:'어떤 물질이든 원하는 것으로 변환하는 연금술.'},
+    ],
+    good: '만년 초보자', bad: '무당',
+    condition: null
+  },
+  BEASTMASTER: {
+    name: '비스트마스터', en: 'Beast Master', emoji: '🐾', grade: 'SR',
+    stats: {STR:3, INT:2, AGI:3, VIT:3, LUK:5},
+    desc: '귀여운 마수들과 교감하며 싸우는 동물 친화형 모험가입니다. 함께 다니는 마수들이 전투의 핵심 전력입니다.',
+    skills: [
+      {icon:'🐺', name:'야수 소환', desc:'강력한 마수들을 소환해 전투에 투입.'},
+      {icon:'💚', name:'동물 교감', desc:'마수와의 깊은 유대로 시너지 효과 극대화.'},
+      {icon:'🌿', name:'야생의 직감', desc:'자연 속에서 함정과 적을 본능적으로 감지.'},
+    ],
+    good: '바드', bad: '저주술사',
+    condition: null
+  },
+  PUPPETEER: {
+    name: '인형사', en: 'Puppeteer', emoji: '🧸', grade: 'SSR',
+    stats: {STR:2, INT:5, AGI:4, VIT:2, LUK:3},
+    desc: '뒤에서 정밀 인형을 조종하는 극강의 안전파입니다. 본체는 절대 위험에 처하지 않는 완벽한 원격 전투 전략가.',
+    skills: [
+      {icon:'🕹️', name:'정밀 조종', desc:'인형을 통해 원격으로 모든 전투 행동 수행.'},
+      {icon:'🪆', name:'분신 인형', desc:'자신과 똑같이 생긴 인형으로 적을 혼란에 빠뜨림.'},
+      {icon:'🧵', name:'강철 실', desc:'초강도 실로 적을 묶거나 베는 공격.'},
+    ],
+    good: '어쌔신', bad: '광전사',
+    condition: null
+  },
+  ENGINEER: {
+    name: '공학자', en: 'Engineer', emoji: '⚙️', grade: 'SR',
+    stats: {STR:3, INT:3, AGI:2, VIT:3, LUK:5},
+    desc: '폭탄과 메카닉을 즉흥 조립하는 발명가 전사입니다. 없는 것도 만들어내는 창의성과 개조 능력의 달인.',
+    skills: [
+      {icon:'🔧', name:'즉흥 개조', desc:'전투 중 주변 재료를 이용해 무기를 즉석 업그레이드.'},
+      {icon:'🤖', name:'메카 소환', desc:'직접 제작한 전투 로봇을 소환해 함께 싸움.'},
+      {icon:'💡', name:'기발한 발명', desc:'아무도 생각하지 못한 변칙적인 전술과 장치 개발.'},
+    ],
+    good: '연금술사', bad: '성기사',
+    condition: null
+  },
+};
+
+// ═══════════════════════════════════════════════════════
+// 3. 게임 상태
+// ═══════════════════════════════════════════════════════
+let state = {
+  name: '구원자',
+  currentQ: 0,
+  scores: {STR:0, INT:0, AGI:0, VIT:0, LUK:0},
+  lazyCount: 0,
+  aggressiveCount: 0,
+};
+
+const STAGE_NAMES = ['', 'STAGE 1: 이세계 각성', 'STAGE 2: 모험의 서막', 'STAGE 3: 시련의 관문', 'STAGE 4: 운명의 선택'];
+const LOADING_MSGS = [
+  '전생 기억 파편을 맞추는 중...',
+  '직업 적성 데이터를 분석하는 중...',
+  '운명의 서판에 이름을 새기는 중...',
+  '이세계 신이 당신을 심사하는 중...',
+];
+
+// ═══════════════════════════════════════════════════════
+// 4. 화면 전환
+// ═══════════════════════════════════════════════════════
+function showScreen(id, delay = 300) {
+  const overlay = document.getElementById('fadeOverlay');
+  overlay.classList.add('active');
+  setTimeout(() => {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    overlay.classList.remove('active');
+  }, delay);
+}
+
+function fadeTransition(callback, delay = 300) {
+  const overlay = document.getElementById('fadeOverlay');
+  overlay.classList.add('active');
+  setTimeout(() => {
+    callback();
+    overlay.classList.remove('active');
+  }, delay);
+}
+
+// ═══════════════════════════════════════════════════════
+// 5. 타이핑 효과
+// ═══════════════════════════════════════════════════════
+function typeWrite(el, text, speed = 30, callback) {
+  el.textContent = '';
+  let i = 0;
+  const timer = setInterval(() => {
+    if (i < text.length) {
+      el.textContent += text[i++];
+    } else {
+      clearInterval(timer);
+      if (callback) callback();
+    }
+  }, speed);
+}
+
+// ═══════════════════════════════════════════════════════
+// 6. 게임 진행
+// ═══════════════════════════════════════════════════════
+function startGame() {
+  const nameInput = document.getElementById('nameInput').value.trim();
+  state.name = nameInput || '구원자';
+
+  showScreen('prologue');
+  setTimeout(() => {
+    const txt = document.getElementById('prologueText');
+    const msgs = [
+      '코드를 분석 중입니다...',
+      `당신의 영혼이 대륙의 운명을 바꿀지 모릅니다.`,
+      `구원자 [${state.name}]의 연대기를 시작합니다. ▶`
+    ];
+    let mi = 0;
+    function nextMsg() {
+      if (mi < msgs.length) {
+        txt.textContent = msgs[mi];
+        mi++;
+        setTimeout(nextMsg, 1500);
+      } else {
+        document.getElementById('prologueBtn').style.display = 'block';
+      }
+    }
+    nextMsg();
+  }, 400);
+}
+
+function startTest() {
+  state.currentQ = 0;
+  state.scores = {STR:0, INT:0, AGI:0, VIT:0, LUK:0};
+  state.lazyCount = 0;
+  state.aggressiveCount = 0;
+  showScreen('test');
+  setTimeout(() => renderQuestion(), 400);
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[state.currentQ];
+  if (!q) return;
+  const total = QUESTIONS.length;
+
+  // HUD 업데이트
+  document.getElementById('hudStage').textContent = STAGE_NAMES[q.stage] || 'STAGE';
+  document.getElementById('progressFill').style.width = `${(state.currentQ / total) * 100}%`;
+  document.getElementById('hudNum').textContent = `${state.currentQ + 1} / ${total}`;
+
+  // 상황
+  document.getElementById('situationEmoji').textContent = q.emoji;
+  document.getElementById('situationText').textContent = q.situation;
+
+  // 질문 표시 (타이밍 안정화를 위해 requestAnimationFrame 사용)
+  const qEl = document.getElementById('questionText');
+  qEl.textContent = '';
+  setTimeout(() => {
+    typeWrite(qEl, q.question, 20);
+  }, 150);
+
+  // 선택지
+  const area = document.getElementById('choicesArea');
+  area.innerHTML = '';
+  const labels = ['A', 'B', 'C', 'D'];
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-label">[${labels[i]}]</span>${c.text}`;
+    btn.onclick = () => selectChoice(c);
+    area.appendChild(btn);
+  });
+}
+
+function selectChoice(choice) {
+  // 스탯 누적
+  Object.entries(choice.stats).forEach(([k,v]) => {
+    state.scores[k] = (state.scores[k] || 0) + v;
+  });
+
+  // 히든 조건 추적
+  if (choice.hidden === 'lazy') state.lazyCount++;
+  if ((choice.stats.STR || 0) >= 2) state.aggressiveCount++;
+
+  state.currentQ++;
+
+  // 스테이지 체크
+  const prev = QUESTIONS[state.currentQ - 1];
+  const curr = QUESTIONS[state.currentQ];
+
+  if (state.currentQ >= QUESTIONS.length) {
+    // 완료 → 로딩
+    showLoading();
+    return;
+  }
+
+  if (curr && curr.stage !== prev.stage) {
+    // 스테이지 클리어
+    showStageClear(prev.stage, curr.stage);
+  } else {
+    fadeTransition(() => renderQuestion(), 200);
+  }
+}
+
+function showStageClear(clearedStage, nextStage) {
+  showScreen('stage');
+  document.getElementById('stageClearText').textContent = `STAGE ${clearedStage} CLEAR!`;
+  document.getElementById('stageNextText').textContent = `▶ ${STAGE_NAMES[nextStage]} 진입`;
+  setTimeout(() => {
+    showScreen('test');
+    setTimeout(() => renderQuestion(), 400);
+  }, 2000);
+}
+
+function showLoading() {
+  showScreen('loading');
+  const bar = document.getElementById('loadingBar');
+  const pct = document.getElementById('loadingPct');
+  const txt = document.getElementById('loadingText');
+  let progress = 0;
+  let msgIdx = 0;
+
+  const timer = setInterval(() => {
+    progress += Math.random() * 8 + 2;
+    if (progress >= 100) { progress = 100; clearInterval(timer); setTimeout(showResult, 500); }
+    bar.style.width = progress + '%';
+    pct.textContent = Math.floor(progress) + '%';
+    const newIdx = Math.floor((progress / 100) * LOADING_MSGS.length);
+    if (newIdx !== msgIdx && newIdx < LOADING_MSGS.length) {
+      msgIdx = newIdx;
+      txt.textContent = LOADING_MSGS[msgIdx];
+    }
+  }, 80);
+}
+
+// ═══════════════════════════════════════════════════════
+// 7. 직업 판정
+// ═══════════════════════════════════════════════════════
+function determineJob() {
+  const s = state.scores;
+  const total = Object.values(s).reduce((a,b) => a+b, 0);
+
+  // 히든 필터 1: 슬라임 (공격 의지 전무)
+  if (state.aggressiveCount === 0) return JOBS.SLIME;
+
+  // 히든 필터 2: 만년 초보자 (게으른 선택만)
+  if (state.lazyCount >= 5) return JOBS.ROOKIE;
+
+  // 히든 필터 3: 마왕성 치킨 (도주+게으름)
+  if (state.lazyCount >= 3 && (s.AGI || 0) > (s.STR || 0) * 2) return JOBS.CHICKEN;
+
+  // 히든 필터 4: 전설의 농부 (VIT 극단)
+  if ((s.VIT || 0) >= 12 && (s.AGI || 0) <= 4) return JOBS.FARMER;
+
+  // 일반 판정: 최고 스탯 조합
+  const sorted = Object.entries(s).sort((a,b) => b[1]-a[1]);
+  const top1 = sorted[0][0];
+  const top2 = sorted[1][0];
+  const isAlt = sorted[0][1] - sorted[1][1] <= 2; // 1,2위 차이가 작으면 혼합형
+
+  // 판정 테이블
+  const jobMap = {
+    'VIT_STR': JOBS.PALADIN, 'STR_VIT': JOBS.PALADIN,
+    'STR_AGI': JOBS.MARTIAL, 'AGI_STR': JOBS.ASSASSIN,
+    'INT_STR': JOBS.MAGIC_SWORD, 'STR_INT': JOBS.BERSERKER,
+    'VIT_INT': JOBS.HIGH_PRIEST, 'INT_VIT': JOBS.CHRONO,
+    'LUK_AGI': JOBS.BARD, 'AGI_LUK': JOBS.THIEF,
+    'INT_LUK': JOBS.HEXER, 'LUK_INT': JOBS.SHAMAN,
+    'AGI_INT': JOBS.SNIPER, 'INT_AGI': JOBS.GUNNER,
+    'LUK_STR': JOBS.BERSERKER, 'STR_LUK': JOBS.MARTIAL,
+    'VIT_AGI': JOBS.SHADOW, 'AGI_VIT': JOBS.DANCER,
+    'INT_AGI': JOBS.PUPPETEER, 'LUK_VIT': JOBS.BEASTMASTER,
+    'VIT_LUK': JOBS.ALCHEMIST, 'AGI_LUK': JOBS.RANGER,
+    'STR_LUK': JOBS.ENGINEER, 'LUK_STR': JOBS.TRAPPER,
+  };
+
+  const key = `${top1}_${top2}`;
+  return jobMap[key] || (() => {
+    // fallback: 단일 최고 스탯
+    const fallback = { STR: JOBS.BERSERKER, INT: JOBS.ARCHMAGE, AGI: JOBS.ASSASSIN, VIT: JOBS.PALADIN, LUK: JOBS.SHAMAN };
+    return fallback[top1] || JOBS.MAGIC_SWORD;
+  })();
+}
+
+// ═══════════════════════════════════════════════════════
+// 8. 결과 표시
+// ═══════════════════════════════════════════════════════
+function showResult() {
+  const job = determineJob();
+  showScreen('result');
+
+  setTimeout(() => {
+    document.getElementById('resultLevel').textContent = `[Lv.99] ${state.name}님의 직업`;
+    document.getElementById('resultSprite').textContent = job.emoji;
+    document.getElementById('resultJobName').textContent = job.name;
+    document.getElementById('resultJobEn').textContent = `JOB: ${job.en}`;
+
+    const gradeEl = document.getElementById('resultGrade');
+    gradeEl.textContent = `[ ${job.grade} ]`;
+    gradeEl.className = `result-grade grade-${job.grade}`;
+
+    // 스탯 바
+    const statsEl = document.getElementById('statBars');
+    const statNames = {STR:'STR', INT:'INT', AGI:'AGI', VIT:'VIT', LUK:'LUK'};
+    const statColors = {STR:'#ff4466', INT:'#4488ff', AGI:'#00ff88', VIT:'#ffaa00', LUK:'#aa44ff'};
+    statsEl.innerHTML = Object.entries(job.stats).map(([k,v]) => `
+      <div class="stat-row">
+        <div class="stat-name">${k}</div>
+        <div class="stat-bar">
+          <div class="stat-bar-fill" style="width:0%;background:${statColors[k]}" data-target="${v*20}"></div>
+        </div>
+        <div class="stat-num">${'■'.repeat(v)}${'□'.repeat(5-v)}</div>
+      </div>`).join('');
+
+    // 스탯 바 애니메이션
+    setTimeout(() => {
+      document.querySelectorAll('.stat-bar-fill').forEach(el => {
+        el.style.width = el.dataset.target + '%';
+      });
+    }, 100);
+
+    document.getElementById('jobDesc').textContent = job.desc;
+
+    // 스킬 목록
+    document.getElementById('skillList').innerHTML = job.skills.map(sk => `
+      <div class="skill-item">
+        <div class="skill-icon">${sk.icon}</div>
+        <div>
+          <div class="skill-name">[패시브] ${sk.name}</div>
+          <div class="skill-desc">${sk.desc}</div>
+        </div>
+      </div>`).join('');
+
+    document.getElementById('synergyGood').textContent = job.good;
+    document.getElementById('synergyBad').textContent = job.bad;
+
+  }, 400);
+}
+
+// ═══════════════════════════════════════════════════════
+// 9. 공유 / 재시작
+// ═══════════════════════════════════════════════════════
+// 이미지 저장 (html2canvas)
+function saveResultImage() {
+  const btn = event.target;
+  btn.textContent = '📸 캡처 중...';
+  btn.disabled = true;
+
+  // html2canvas 동적 로드
+  if (!window.html2canvas) {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    script.onload = () => captureResult(btn);
+    document.head.appendChild(script);
+  } else {
+    captureResult(btn);
+  }
+}
+
+function captureResult(btn) {
+  const target = document.getElementById('screen-result');
+  // 버튼 임시 숨김 (캡처에서 제외)
+  const btns = document.querySelector('.result-btns');
+  if (btns) btns.style.display = 'none';
+
+  html2canvas(target, {
+    backgroundColor: '#0a0a1a',
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    logging: false,
+    onclone: (doc) => {
+      // 클론에서 body 배경 강제 설정
+      doc.body.style.background = '#0a0a1a';
+      const wrap = doc.querySelector('.wrap');
+      if (wrap) wrap.style.background = '#0a0a1a';
+    }
+  }).then(canvas => {
+    if (btns) btns.style.display = '';
+    const link = document.createElement('a');
+    const jobName = document.getElementById('resultJobName').textContent;
+    link.download = `이세계직업_${state.name}_${jobName}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    btn.textContent = '💾 SAVE (결과 카드 이미지 저장)';
+    btn.disabled = false;
+  }).catch(() => {
+    if (btns) btns.style.display = '';
+    alert('이미지 저장 중 오류가 발생했습니다. 스크린샷을 이용해주세요!');
+    btn.textContent = '💾 SAVE (결과 카드 이미지 저장)';
+    btn.disabled = false;
+  });
+}
+
+// 링크 공유
+function shareResult() {
+  const jobName = document.getElementById('resultJobName').textContent;
+  const url = window.location.href.split('?')[0];
+  const text = `[픽셀 판타지] 나의 이세계 직업은 "${jobName}"!\n너는 어떤 직업인지 테스트해봐!`;
+  if (navigator.share) {
+    navigator.share({ title: '픽셀 판타지: 이세계 직업 판정', text, url }).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(url).then(() => {
+      alert('테스트 링크가 복사되었습니다! 친구에게 공유해보세요 🎮');
+    }).catch(() => { prompt('아래 링크를 복사하세요:', url); });
+  }
+}
+
+function retryGame() {
+  state = { name: state.name, currentQ: 0, scores: {STR:0,INT:0,AGI:0,VIT:0,LUK:0}, lazyCount:0, aggressiveCount:0 };
+  showScreen('title');
+}
+
+function goToTests() {
+  window.location.href = '../../test.html';
+}
+
+// 프롤로그 버튼 초기 숨김
+document.getElementById('prologueBtn').style.display = 'none';

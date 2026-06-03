@@ -1,0 +1,753 @@
+    :root {
+      --bg: #0a0a1a;
+      --surface: #12122a;
+      --border: #2a2a5a;
+      --gold: #ffd700;
+      --gold2: #ffaa00;
+      --white: #e8e8ff;
+      --gray: #6868a8;
+      --green: #00ff88;
+      --red: #ff4466;
+      --blue: #4488ff;
+      --purple: #aa44ff;
+      --pixel: 'Press Start 2P', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Noto Sans KR', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* 픽셀 배경 패턴 */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(68,136,255,0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(170,68,255,0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      max-width: 520px;
+      margin: 0 auto;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── 공통 픽셀 박스 ── */
+    .pixel-box {
+      border: 3px solid var(--border);
+      background: var(--surface);
+      image-rendering: pixelated;
+      position: relative;
+    }
+
+    .pixel-box::before {
+      content: '';
+      position: absolute;
+      top: -3px; left: -3px; right: -3px; bottom: -3px;
+      border: 1px solid rgba(255,255,255,0.05);
+      pointer-events: none;
+    }
+
+    /* ── 화면 전환 ── */
+    .screen { display: none; animation: fadeIn 0.4s ease; }
+    .screen.active { display: flex; flex-direction: column; min-height: 100vh; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ── 암전 오버레이 ── */
+    .fade-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: opacity 0.3s;
+    }
+    .fade-overlay.active { opacity: 1; pointer-events: auto; }
+
+    /* ══════════════════════════════
+       타이틀 화면
+    ══════════════════════════════ */
+    #screen-title {
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .title-logo {
+      font-family: var(--pixel);
+      font-size: 1.0rem;
+      color: var(--gold);
+      line-height: 2;
+      margin-bottom: 8px;
+      text-shadow: 2px 2px 0 rgba(255,170,0,0.3);
+      animation: blink-gold 2s infinite;
+    }
+
+    @keyframes blink-gold {
+      0%,100% { text-shadow: 2px 2px 0 rgba(255,170,0,0.3); }
+      50% { text-shadow: 2px 2px 0 rgba(255,170,0,0.8), 0 0 20px rgba(255,215,0,0.5); }
+    }
+
+    .title-sub {
+      font-family: var(--pixel);
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-bottom: 30px;
+      line-height: 2;
+    }
+
+    .pixel-sprite {
+      font-size: 3rem;
+      margin: 16px 0;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .press-start {
+      font-family: var(--pixel);
+      font-size: 0.9rem;
+      color: var(--white);
+      animation: blink 1s step-end infinite;
+      margin: 16px 0 24px;
+    }
+
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* 이름 입력 */
+    .name-section {
+      width: 100%;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .name-label {
+      font-family: var(--pixel);
+      font-size: 0.8rem;
+      color: var(--gold);
+      margin-bottom: 10px;
+      line-height: 2;
+    }
+
+    .name-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg);
+      border: 2px solid var(--gold);
+      padding: 10px 12px;
+    }
+
+    .name-cursor {
+      font-family: var(--pixel);
+      color: var(--gold);
+      font-size: 0.9rem;
+    }
+
+    .name-input {
+      background: transparent;
+      border: none;
+      color: var(--white);
+      font-family: var(--pixel);
+      font-size: 0.78rem;
+      outline: none;
+      flex: 1;
+      letter-spacing: 2px;
+    }
+
+    .name-input::placeholder { color: var(--gray); }
+
+    /* 메뉴 버튼 */
+    .menu-btn {
+      width: 100%;
+      padding: 14px;
+      font-family: var(--pixel);
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: 2px solid;
+      transition: all 0.1s;
+      text-align: left;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .menu-btn.primary {
+      background: var(--gold);
+      color: var(--bg);
+      border-color: var(--gold2);
+    }
+
+    .menu-btn.primary:hover {
+      background: var(--gold2);
+      transform: translate(2px, 2px);
+      box-shadow: -2px -2px 0 rgba(0,0,0,0.5);
+    }
+
+    .menu-btn.disabled {
+      background: transparent;
+      color: var(--gray);
+      border-color: var(--border);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    /* 프롤로그 */
+    #screen-prologue {
+      justify-content: center;
+      align-items: center;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .prologue-box {
+      width: 100%;
+      padding: 24px;
+      border: 2px solid var(--blue);
+      background: rgba(0,0,50,0.8);
+    }
+
+    .prologue-text {
+      font-family: var(--pixel);
+      font-size: 0.85rem;
+      color: var(--white);
+      line-height: 2.5;
+      min-height: 80px;
+    }
+
+    /* ══════════════════════════════
+       테스트 화면
+    ══════════════════════════════ */
+    #screen-test { padding: 0; }
+
+    /* 상단 HUD */
+    .hud {
+      background: var(--surface);
+      border-bottom: 2px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .hud-stage {
+      font-family: var(--pixel);
+      font-size: 0.8rem;
+      color: var(--gold);
+    }
+
+    .hud-progress {
+      flex: 1;
+      margin: 0 12px;
+      height: 8px;
+      background: var(--border);
+      border: 1px solid var(--gray);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hud-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--gold));
+      transition: width 0.3s;
+      image-rendering: pixelated;
+    }
+
+    .hud-num {
+      font-family: var(--pixel);
+      font-size: 0.8rem;
+      color: var(--white);
+      white-space: nowrap;
+    }
+
+    /* 상황 묘사 영역 */
+    .situation-area {
+      padding: 16px;
+      border-bottom: 2px solid var(--border);
+      min-height: 80px;
+      background: linear-gradient(180deg, rgba(10,10,40,0.9) 0%, var(--surface) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .situation-emoji {
+      font-size: 2.5rem;
+      margin-right: 12px;
+      animation: float 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    .situation-text {
+      font-size: 1.1rem;
+      color: var(--gray);
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* 질문 대화창 */
+    .question-box {
+      margin: 16px;
+      border: 2px solid var(--blue);
+      background: rgba(0,0,50,0.8);
+      padding: 16px;
+      position: relative;
+    }
+
+    .question-box::before {
+      content: '▶ 질문';
+      position: absolute;
+      top: -10px;
+      left: 12px;
+      font-family: var(--pixel);
+      font-size: 0.75rem;
+      color: var(--blue);
+      background: var(--bg);
+      padding: 0 6px;
+    }
+
+    .question-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.95rem;
+      color: var(--white);
+      line-height: 1.8;
+      min-height: 60px;
+      font-weight: 500;
+    }
+
+    /* 선택지 */
+    .choices {
+      padding: 0 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .choice-btn {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      color: var(--white);
+      padding: 12px 14px;
+      text-align: left;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all 0.1s;
+      line-height: 1.5;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .choice-btn::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--gold);
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+
+    .choice-btn:hover {
+      border-color: var(--gold);
+      background: rgba(255,215,0,0.08);
+      transform: translate(2px, 0);
+    }
+
+    .choice-btn:hover::before { opacity: 1; }
+    .choice-btn:active { transform: translate(2px, 2px); }
+
+    .choice-label {
+      font-family: var(--pixel);
+      font-size: 0.78rem;
+      color: var(--gold);
+      margin-right: 10px;
+    }
+
+    /* 스테이지 클리어 */
+    #screen-stage {
+      justify-content: center;
+      align-items: center;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .stage-clear-title {
+      font-family: var(--pixel);
+      font-size: 0.9rem;
+      color: var(--green);
+
+      margin-bottom: 16px;
+      animation: blink-gold 0.5s infinite;
+    }
+
+    .stage-next {
+      font-family: var(--pixel);
+      font-size: 0.9rem;
+      color: var(--gold);
+      margin-top: 16px;
+    }
+
+    /* 로딩 */
+    #screen-loading {
+      justify-content: center;
+      align-items: center;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .loading-text {
+      font-family: var(--pixel);
+      font-size: 0.85rem;
+      color: var(--white);
+      line-height: 2.5;
+      margin-bottom: 20px;
+    }
+
+    .loading-bar-wrap {
+      width: 100%;
+      height: 20px;
+      border: 2px solid var(--gold);
+      background: var(--bg);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .loading-bar-fill {
+      height: 100%;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--gold) 0px,
+        var(--gold) 8px,
+        var(--gold2) 8px,
+        var(--gold2) 16px
+      );
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    .loading-pct {
+      font-family: var(--pixel);
+      font-size: 0.9rem;
+      color: var(--gold);
+    }
+
+    /* ══════════════════════════════
+       결과 화면
+    ══════════════════════════════ */
+    #screen-result {
+      padding: 0 0 40px;
+    }
+
+    .result-header {
+      background: linear-gradient(180deg, #1a0a2a 0%, var(--surface) 100%);
+      padding: 20px 16px;
+      border-bottom: 2px solid var(--border);
+      text-align: center;
+    }
+
+    .result-level {
+      font-family: var(--pixel);
+      font-size: 0.8rem;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .result-job-name {
+      font-family: var(--pixel);
+      font-size: 0.9rem;
+      color: var(--gold);
+      line-height: 1.8;
+      text-shadow: 0 0 20px rgba(255,215,0,0.5);
+      margin-bottom: 4px;
+      animation: blink-gold 2s infinite;
+    }
+
+    .result-job-en {
+      font-family: var(--pixel);
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin-bottom: 16px;
+    }
+
+    .result-sprite {
+      font-size: 4rem;
+      margin: 8px 0;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    .result-grade {
+      display: inline-block;
+      font-family: var(--pixel);
+      font-size: 0.85rem;
+      padding: 4px 12px;
+      border: 2px solid;
+      margin-top: 8px;
+    }
+
+    .grade-SSR { color: var(--gold); border-color: var(--gold); background: rgba(255,215,0,0.1); }
+    .grade-SR  { color: var(--purple); border-color: var(--purple); background: rgba(170,68,255,0.1); }
+    .grade-R   { color: var(--blue); border-color: var(--blue); background: rgba(68,136,255,0.1); }
+    .grade-UR  { color: var(--red); border-color: var(--red); background: rgba(255,68,102,0.1); animation: blink-gold 0.8s infinite; }
+
+    /* 스탯 */
+    .stat-section {
+      padding: 16px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .section-title {
+      font-family: var(--pixel);
+      font-size: 0.8rem;
+      color: var(--gold);
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .stat-name {
+      font-family: var(--pixel);
+      font-size: 0.75rem;
+      color: var(--gray);
+      width: 30px;
+      flex-shrink: 0;
+    }
+
+    .stat-bar {
+      flex: 1;
+      height: 10px;
+      background: var(--border);
+      border: 1px solid var(--gray);
+      overflow: hidden;
+    }
+
+    .stat-bar-fill {
+      height: 100%;
+      background: var(--green);
+      transition: width 0.8s ease;
+      image-rendering: pixelated;
+    }
+
+    .stat-num {
+      font-family: var(--pixel);
+      font-size: 0.75rem;
+      color: var(--white);
+      width: 20px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* 설명 */
+    .desc-section {
+      padding: 16px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .job-desc {
+      font-size: 0.88rem;
+      color: var(--white);
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    /* 패시브 스킬 */
+    .skill-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .skill-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .skill-icon { font-size: 1.2rem; flex-shrink: 0; }
+
+    .skill-name {
+      font-family: var(--pixel);
+      font-size: 0.75rem;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .skill-desc {
+      font-size: 0.78rem;
+      color: var(--gray);
+      line-height: 1.5;
+    }
+
+    /* 상성 */
+    .synergy-section {
+      padding: 16px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .synergy-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .synergy-card {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: center;
+    }
+
+    .synergy-label {
+      font-family: var(--pixel);
+      font-size: 1.0rem;
+      margin-bottom: 6px;
+    }
+
+    .synergy-label.good { color: var(--green); }
+    .synergy-label.bad  { color: var(--red); }
+
+    .synergy-job {
+      font-size: 1.0rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    /* 하단 버튼 */
+    .result-btns {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .result-btn {
+      width: 100%;
+      padding: 13px;
+      font-family: var(--pixel);
+      font-size: 0.8rem;
+      cursor: pointer;
+      border: 2px solid;
+      transition: all 0.1s;
+      letter-spacing: 1px;
+    }
+
+    .result-btn.primary {
+      background: var(--gold);
+      color: var(--bg);
+      border-color: var(--gold2);
+    }
+
+    .result-btn.secondary {
+      background: transparent;
+      color: var(--white);
+      border-color: var(--border);
+    }
+
+    .result-btn.green {
+      background: rgba(0,255,136,0.1);
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    .result-btn:hover { transform: translate(2px, 2px); }
+
+    /* ── PC 반응형 ── */
+    @media (min-width: 600px) {
+      .wrap { max-width: 600px; }
+      .title-logo { font-size: 1.1rem; }
+      .title-sub  { font-size: 1.0rem; }
+      .press-start { font-size: 0.9rem; }
+      .name-label  { font-size: 0.78rem; }
+      .name-input  { font-size: 0.85rem; }
+      .menu-btn    { font-size: 0.75rem; padding: 16px; }
+      .prologue-text { font-size: 0.9rem; }
+      .hud-stage, .hud-num { font-size: 0.78rem; }
+      .situation-text { font-size: 0.9rem; }
+      .situation-emoji { font-size: 3rem; }
+      .question-text  { font-size: 1.05rem; }
+      .choice-btn     { font-size: 1rem; padding: 14px 16px; }
+      .choice-label   { font-size: 1.0rem; }
+      .loading-text   { font-size: 0.9rem; }
+      .loading-pct    { font-size: 0.9rem; }
+      .stage-clear-title { font-size: 0.9rem; }
+      .stage-next     { font-size: 0.9rem; }
+      .result-level   { font-size: 0.78rem; }
+      .result-job-name { font-size: 0.9rem; }
+      .result-job-en  { font-size: 0.78rem; }
+      .section-title  { font-size: 0.78rem; }
+      .job-desc       { font-size: 0.95rem; }
+      .skill-name     { font-size: 0.9rem; }
+      .skill-desc     { font-size: 1.0rem; }
+      .synergy-label  { font-size: 0.85rem; }
+      .synergy-job    { font-size: 0.95rem; }
+      .result-btn     { font-size: 0.78rem; padding: 15px; }
+    }
+
+    /* 반응형 */
+    @media (max-width: 360px) {
+      .title-logo { font-size: 0.9rem; }
+      .question-text { font-size: 1.0rem; }
+      .choice-btn { font-size: 0.8rem; }
+    }
+
+    /* ── PC 전용 추가 크기 ── */
+    @media (min-width: 768px) {
+      .wrap { max-width: 680px; }
+      .title-logo { font-size: 1.3rem !important; }
+      .title-sub  { font-size: 0.8rem !important; }
+      .press-start { font-size: 0.85rem !important; }
+      .name-label  { font-size: 0.7rem !important; }
+      .name-input  { font-size: 0.85rem !important; }
+      .menu-btn    { font-size: 0.8rem !important; padding: 18px !important; }
+      .prologue-text { font-size: 0.85rem !important; }
+      .hud-stage, .hud-num { font-size: 0.7rem !important; }
+      .situation-text { font-size: 1rem !important; }
+      .question-text  { font-size: 1.1rem !important; }
+      .choice-btn     { font-size: 1.05rem !important; padding: 16px !important; }
+      .choice-label   { font-size: 0.7rem !important; }
+      .loading-text   { font-size: 0.85rem !important; }
+      .loading-pct    { font-size: 0.85rem !important; }
+      .stage-clear-title { font-size: 1.1rem !important; }
+      .stage-next     { font-size: 0.8rem !important; }
+      .result-level   { font-size: 0.72rem !important; }
+      .result-job-name { font-size: 1.1rem !important; }
+      .result-job-en  { font-size: 0.65rem !important; }
+      .section-title  { font-size: 0.7rem !important; }
+      .job-desc       { font-size: 1.0rem !important; }
+      .skill-name     { font-size: 0.65rem !important; }
+      .skill-desc     { font-size: 0.9rem !important; }
+      .synergy-label  { font-size: 0.62rem !important; }
+      .synergy-job    { font-size: 1.0rem !important; }
+      .result-btn     { font-size: 0.7rem !important; padding: 16px !important; }
+      .result-grade   { font-size: 0.6rem !important; }
+      .stat-name      { font-size: 0.55rem !important; }
+    }
