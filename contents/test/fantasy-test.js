@@ -891,17 +891,23 @@ function showResult() {
 // ═══════════════════════════════════════════════════════
 // 9. 공유 / 재시작
 // ═══════════════════════════════════════════════════════
-// 이미지 저장 (html2canvas)
+// 이미지 저장 (dom-to-image-more: CSS 변수 색상 재현 정확도 높음)
 function saveResultImage() {
   const btn = event.target;
   btn.textContent = '📸 캡처 중...';
   btn.disabled = true;
 
-  // html2canvas 동적 로드
-  if (!window.html2canvas) {
+  if (!window.domtoimage) {
     const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/dom-to-image-more/3.4.0/dom-to-image-more.min.js';
     script.onload = () => captureResult(btn);
+    script.onerror = () => {
+      // fallback: html2canvas
+      const s2 = document.createElement('script');
+      s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s2.onload = () => captureResultFallback(btn);
+      document.head.appendChild(s2);
+    };
     document.head.appendChild(script);
   } else {
     captureResult(btn);
@@ -910,45 +916,75 @@ function saveResultImage() {
 
 function captureResult(btn) {
   const target = document.getElementById('screen-result');
-  // 버튼 임시 숨김 (캡처에서 제외)
   const btns = document.querySelector('.result-btns');
   if (btns) btns.style.display = 'none';
 
-  // fade-overlay 임시 숨김 (어두운 레이어 캡처 방지)
   const overlay = document.getElementById('fadeOverlay');
-  const overlayPrev = overlay.style.cssText;
-  overlay.style.cssText = 'display:none!important';
+  overlay.style.display = 'none';
+
+  const jobName = document.getElementById('resultJobName').textContent;
+
+  domtoimage.toPng(target, {
+    scale: 2,
+    bgcolor: '#0a0a1a',
+    filter: (node) => {
+      if (node.id === 'fadeOverlay') return false;
+      if (node.classList && node.classList.contains('result-btns')) return false;
+      return true;
+    },
+    style: {
+      'background': '#0a0a1a'
+    }
+  }).then(dataUrl => {
+    overlay.style.display = '';
+    if (btns) btns.style.display = '';
+    const link = document.createElement('a');
+    link.download = `이세계직업_${state.name}_${jobName}.png`;
+    link.href = dataUrl;
+    link.click();
+    btn.textContent = '💾 SAVE (결과 카드 이미지 저장)';
+    btn.disabled = false;
+  }).catch(() => {
+    overlay.style.display = '';
+    if (btns) btns.style.display = '';
+    alert('이미지 저장 중 오류가 발생했습니다. 스크린샷을 이용해주세요!');
+    btn.textContent = '💾 SAVE (결과 카드 이미지 저장)';
+    btn.disabled = false;
+  });
+}
+
+// html2canvas fallback
+function captureResultFallback(btn) {
+  const target = document.getElementById('screen-result');
+  const btns = document.querySelector('.result-btns');
+  if (btns) btns.style.display = 'none';
+  const overlay = document.getElementById('fadeOverlay');
+  overlay.style.display = 'none';
 
   html2canvas(target, {
     backgroundColor: '#0a0a1a',
     scale: 2,
     useCORS: true,
     allowTaint: true,
-    logging: false,
-    ignoreElements: (el) => el.id === 'fadeOverlay',
+    ignoreElements: (el) => el.id === 'fadeOverlay' || el.classList.contains('result-btns'),
     onclone: (doc) => {
-      // 클론에서 body::before pseudo-element 및 overlay 완전 제거
-      doc.body.style.background = '#0a0a1a';
       const styleEl = doc.createElement('style');
-      styleEl.textContent = 'body::before { display: none !important; } #fadeOverlay { display: none !important; }';
+      styleEl.textContent = 'body::before,.wrap::before,#fadeOverlay,.result-btns{display:none!important} #screen-result{background:#0a0a1a!important}';
       doc.head.appendChild(styleEl);
-      const wrap = doc.querySelector('.wrap');
-      if (wrap) wrap.style.background = '#0a0a1a';
     }
   }).then(canvas => {
-    overlay.style.cssText = overlayPrev;
+    overlay.style.display = '';
     if (btns) btns.style.display = '';
-    const link = document.createElement('a');
     const jobName = document.getElementById('resultJobName').textContent;
+    const link = document.createElement('a');
     link.download = `이세계직업_${state.name}_${jobName}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
     btn.textContent = '💾 SAVE (결과 카드 이미지 저장)';
     btn.disabled = false;
   }).catch(() => {
-    overlay.style.cssText = overlayPrev;
+    overlay.style.display = '';
     if (btns) btns.style.display = '';
-    alert('이미지 저장 중 오류가 발생했습니다. 스크린샷을 이용해주세요!');
     btn.textContent = '💾 SAVE (결과 카드 이미지 저장)';
     btn.disabled = false;
   });

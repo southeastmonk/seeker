@@ -23,8 +23,8 @@
       overflow-x: hidden;
     }
 
-    /* 픽셀 배경 패턴 */
-    body::before {
+    /* 픽셀 배경 패턴 - wrap::before로 이동 (html2canvas fixed 레이어 캡처 문제 방지) */
+    .wrap::before {
       content: '';
       position: fixed;
       inset: 0;
@@ -332,6 +332,8 @@
       line-height: 1.8;
       min-height: 60px;
       font-weight: 500;
+      position: relative;
+      z-index: 1;
     }
 
     /* 선택지 */
