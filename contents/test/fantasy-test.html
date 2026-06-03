@@ -340,11 +340,12 @@
     }
 
     .question-text {
-      font-family: var(--pixel);
-      font-size: 0.42rem;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.95rem;
       color: var(--white);
-      line-height: 2.2;
+      line-height: 1.8;
       min-height: 60px;
+      font-weight: 500;
     }
 
     /* 선택지 */
@@ -362,7 +363,7 @@
       padding: 12px 14px;
       text-align: left;
       font-family: 'Noto Sans KR', sans-serif;
-      font-size: 0.82rem;
+      font-size: 0.92rem;
       cursor: pointer;
       transition: all 0.1s;
       line-height: 1.5;
@@ -391,9 +392,9 @@
 
     .choice-label {
       font-family: var(--pixel);
-      font-size: 0.35rem;
+      font-size: 0.5rem;
       color: var(--gold);
-      margin-right: 8px;
+      margin-right: 10px;
     }
 
     /* 스테이지 클리어 */
@@ -408,6 +409,7 @@
       font-family: var(--pixel);
       font-size: 0.7rem;
       color: var(--green);
+
       margin-bottom: 16px;
       animation: blink-gold 0.5s infinite;
     }
@@ -692,11 +694,43 @@
 
     .result-btn:hover { transform: translate(2px, 2px); }
 
+    /* ── PC 반응형 ── */
+    @media (min-width: 600px) {
+      .wrap { max-width: 600px; }
+      .title-logo { font-size: 0.75rem; }
+      .title-sub  { font-size: 0.55rem; }
+      .press-start { font-size: 0.6rem; }
+      .name-label  { font-size: 0.5rem; }
+      .name-input  { font-size: 0.65rem; }
+      .menu-btn    { font-size: 0.58rem; padding: 16px; }
+      .prologue-text { font-size: 0.6rem; }
+      .hud-stage, .hud-num { font-size: 0.5rem; }
+      .situation-text { font-size: 0.9rem; }
+      .situation-emoji { font-size: 3rem; }
+      .question-text  { font-size: 1.05rem; }
+      .choice-btn     { font-size: 1rem; padding: 14px 16px; }
+      .choice-label   { font-size: 0.55rem; }
+      .loading-text   { font-size: 0.6rem; }
+      .loading-pct    { font-size: 0.6rem; }
+      .stage-clear-title { font-size: 0.9rem; }
+      .stage-next     { font-size: 0.6rem; }
+      .result-level   { font-size: 0.5rem; }
+      .result-job-name { font-size: 0.9rem; }
+      .result-job-en  { font-size: 0.5rem; }
+      .section-title  { font-size: 0.5rem; }
+      .job-desc       { font-size: 0.95rem; }
+      .skill-name     { font-size: 0.45rem; }
+      .skill-desc     { font-size: 0.85rem; }
+      .synergy-label  { font-size: 0.42rem; }
+      .synergy-job    { font-size: 0.95rem; }
+      .result-btn     { font-size: 0.5rem; padding: 15px; }
+    }
+
     /* 반응형 */
     @media (max-width: 360px) {
       .title-logo { font-size: 0.45rem; }
-      .question-text { font-size: 0.38rem; }
-      .choice-btn { font-size: 0.75rem; }
+      .question-text { font-size: 0.85rem; }
+      .choice-btn { font-size: 0.8rem; }
     }
   </style>
 </head>
@@ -823,7 +857,8 @@
     </div>
 
     <div class="result-btns">
-      <button class="result-btn primary" onclick="shareResult()">🔗 SHARE (카카오톡 공격대 매칭)</button>
+      <button class="result-btn primary" onclick="saveResultImage()">💾 SAVE (결과 카드 이미지 저장)</button>
+      <button class="result-btn primary" style="background:var(--green);color:var(--bg);border-color:var(--green)" onclick="shareResult()">🔗 SHARE (링크 공유)</button>
       <button class="result-btn green" onclick="goToTests()">🍻 모험가 주점으로 돌아가기</button>
       <button class="result-btn secondary" onclick="retryGame()">🔄 RETRY (다시 환생하기)</button>
     </div>
@@ -1521,6 +1556,7 @@ function startTest() {
 
 function renderQuestion() {
   const q = QUESTIONS[state.currentQ];
+  if (!q) return;
   const total = QUESTIONS.length;
 
   // HUD 업데이트
@@ -1532,8 +1568,12 @@ function renderQuestion() {
   document.getElementById('situationEmoji').textContent = q.emoji;
   document.getElementById('situationText').textContent = q.situation;
 
-  // 질문 타이핑 효과
-  typeWrite(document.getElementById('questionText'), q.question, 25);
+  // 질문 표시 (타이밍 안정화를 위해 requestAnimationFrame 사용)
+  const qEl = document.getElementById('questionText');
+  qEl.textContent = '';
+  requestAnimationFrame(() => {
+    typeWrite(qEl, q.question, 20);
+  });
 
   // 선택지
   const area = document.getElementById('choicesArea');
@@ -1716,15 +1756,56 @@ function showResult() {
 // ═══════════════════════════════════════════════════════
 // 9. 공유 / 재시작
 // ═══════════════════════════════════════════════════════
+// 이미지 저장 (html2canvas)
+function saveResultImage() {
+  const btn = event.target;
+  btn.textContent = '📸 캡처 중...';
+  btn.disabled = true;
+
+  // html2canvas 동적 로드
+  if (!window.html2canvas) {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    script.onload = () => captureResult(btn);
+    document.head.appendChild(script);
+  } else {
+    captureResult(btn);
+  }
+}
+
+function captureResult(btn) {
+  const target = document.getElementById('screen-result');
+  html2canvas(target, {
+    backgroundColor: '#0a0a1a',
+    scale: 2,
+    useCORS: true,
+    logging: false,
+  }).then(canvas => {
+    const link = document.createElement('a');
+    const jobName = document.getElementById('resultJobName').textContent;
+    link.download = `이세계직업_${state.name}_${jobName}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    btn.textContent = '💾 SAVE (결과 카드 이미지 저장)';
+    btn.disabled = false;
+  }).catch(() => {
+    alert('이미지 저장 중 오류가 발생했습니다. 스크린샷을 이용해주세요!');
+    btn.textContent = '💾 SAVE (결과 카드 이미지 저장)';
+    btn.disabled = false;
+  });
+}
+
+// 링크 공유
 function shareResult() {
   const jobName = document.getElementById('resultJobName').textContent;
-  const text = `[픽셀 판타지] 나의 이세계 직업은 "${jobName}"! 너는 어떤 직업?\n${window.location.href}`;
+  const url = window.location.href.split('?')[0];
+  const text = `[픽셀 판타지] 나의 이세계 직업은 "${jobName}"!\n너는 어떤 직업인지 테스트해봐!`;
   if (navigator.share) {
-    navigator.share({ title: '픽셀 판타지: 이세계 직업 판정', text, url: window.location.href }).catch(()=>{});
+    navigator.share({ title: '픽셀 판타지: 이세계 직업 판정', text, url }).catch(()=>{});
   } else {
-    navigator.clipboard?.writeText(window.location.href).then(() => {
-      alert('링크가 복사되었습니다! 친구에게 공유해보세요 🎮');
-    });
+    navigator.clipboard?.writeText(url).then(() => {
+      alert('테스트 링크가 복사되었습니다! 친구에게 공유해보세요 🎮');
+    }).catch(() => { prompt('아래 링크를 복사하세요:', url); });
   }
 }
 
