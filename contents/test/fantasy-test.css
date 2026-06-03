@@ -559,9 +559,10 @@
       font-family: var(--pixel);
       font-size: 0.75rem;
       color: var(--white);
-      width: 20px;
+      width: 56px;
       text-align: right;
       flex-shrink: 0;
+      letter-spacing: 1px;
     }
 
     /* 설명 */
@@ -714,11 +715,57 @@
       .result-btn     { font-size: 0.78rem; padding: 15px; }
     }
 
-    /* 반응형 */
+    /* ── 모바일 기본 (~ 480px) ── */
+    @media (max-width: 480px) {
+      .stat-num {
+        font-size: 0.55rem;
+        width: 46px;
+        letter-spacing: 0px;
+      }
+      .stat-name { font-size: 0.6rem; width: 26px; }
+      .stat-bar  { height: 8px; }
+      /* 버튼 텍스트 줄바꿈 방지 */
+      .menu-btn {
+        font-size: 0.72rem;
+        padding: 12px 10px;
+        letter-spacing: 0px;
+        word-break: keep-all;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .result-btn {
+        font-size: 0.62rem;
+        padding: 11px 8px;
+        letter-spacing: 0px;
+        word-break: keep-all;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      /* 타이틀 */
+      .title-logo   { font-size: 0.82rem; }
+      .title-sub    { font-size: 0.68rem; }
+      .press-start  { font-size: 0.72rem; }
+      .name-label   { font-size: 0.65rem; }
+      .name-input   { font-size: 0.65rem; }
+      /* 결과 화면 */
+      .result-level    { font-size: 0.6rem; }
+      .result-job-name { font-size: 0.78rem; }
+      .result-job-en   { font-size: 0.58rem; }
+      .result-grade    { font-size: 0.55rem; }
+      .section-title   { font-size: 0.6rem; }
+      .skill-name      { font-size: 0.62rem; }
+      .synergy-label   { font-size: 0.6rem; }
+    }
+
+    /* ── 초소형 모바일 (~ 360px) ── */
     @media (max-width: 360px) {
-      .title-logo { font-size: 0.9rem; }
+      .title-logo   { font-size: 0.72rem; }
+      .menu-btn     { font-size: 0.62rem; }
+      .result-btn   { font-size: 0.55rem; }
       .question-text { font-size: 1.0rem; }
-      .choice-btn { font-size: 0.8rem; }
+      .choice-btn   { font-size: 0.8rem; }
     }
 
     /* ── PC 전용 추가 크기 ── */
