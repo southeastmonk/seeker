@@ -714,7 +714,11 @@ function renderQuestion() {
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
     btn.innerHTML = `<span class="choice-label">[${labels[i]}]</span>${c.text}`;
-    btn.onclick = () => selectChoice(c);
+    btn.onclick = () => {
+      // 중복 클릭 방지: 모든 선택지 즉시 비활성화
+      area.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+      selectChoice(c);
+    };
     area.appendChild(btn);
   });
 }
@@ -910,19 +914,29 @@ function captureResult(btn) {
   const btns = document.querySelector('.result-btns');
   if (btns) btns.style.display = 'none';
 
+  // fade-overlay 임시 숨김 (어두운 레이어 캡처 방지)
+  const overlay = document.getElementById('fadeOverlay');
+  const overlayPrev = overlay.style.cssText;
+  overlay.style.cssText = 'display:none!important';
+
   html2canvas(target, {
     backgroundColor: '#0a0a1a',
     scale: 2,
     useCORS: true,
     allowTaint: true,
     logging: false,
+    ignoreElements: (el) => el.id === 'fadeOverlay',
     onclone: (doc) => {
-      // 클론에서 body 배경 강제 설정
+      // 클론에서 body::before pseudo-element 및 overlay 완전 제거
       doc.body.style.background = '#0a0a1a';
+      const styleEl = doc.createElement('style');
+      styleEl.textContent = 'body::before { display: none !important; } #fadeOverlay { display: none !important; }';
+      doc.head.appendChild(styleEl);
       const wrap = doc.querySelector('.wrap');
       if (wrap) wrap.style.background = '#0a0a1a';
     }
   }).then(canvas => {
+    overlay.style.cssText = overlayPrev;
     if (btns) btns.style.display = '';
     const link = document.createElement('a');
     const jobName = document.getElementById('resultJobName').textContent;
@@ -932,6 +946,7 @@ function captureResult(btn) {
     btn.textContent = '💾 SAVE (결과 카드 이미지 저장)';
     btn.disabled = false;
   }).catch(() => {
+    overlay.style.cssText = overlayPrev;
     if (btns) btns.style.display = '';
     alert('이미지 저장 중 오류가 발생했습니다. 스크린샷을 이용해주세요!');
     btn.textContent = '💾 SAVE (결과 카드 이미지 저장)';
