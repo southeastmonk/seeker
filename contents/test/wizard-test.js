@@ -821,10 +821,10 @@ function renderStatBars() {
   const totalJP = (jScore + pScore) || 1;
 
   const axes = [
-    { l: 'E', r: 'I', lv: eScore / totalEI },
-    { l: 'S', r: 'N', lv: sScore / totalSN },
-    { l: 'T', r: 'F', lv: tScore / totalTF },
-    { l: 'J', r: 'P', lv: jScore / totalJP },
+  { l: '⚔️', r: '🌙', lv: eScore / totalEI },
+  { l: '💥', r: '✨', lv: sScore / totalSN },
+  { l: '❄️', r: '💫', lv: tScore / totalTF },
+  { l: '🛡️', r: '🌀', lv: jScore / totalJP },
   ];
 
   const wrap = document.getElementById('stat-bars');
