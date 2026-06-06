@@ -17,7 +17,7 @@
 
   <url>
     <loc>https://seeker.kr/test.html</loc>
-    <lastmod>2026-06-03</lastmod>
+    <lastmod>2026-06-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -47,6 +47,13 @@
     <loc>https://seeker.kr/contents/test/fantasy-test.html</loc>
     <lastmod>2026-06-03</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://seeker.kr/contents/test/wizard-test.html</loc>
+    <lastmod>2026-06-06</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
